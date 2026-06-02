@@ -10,6 +10,7 @@ from typing import Any
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 ROOT = Path(__file__).resolve().parent
@@ -30,9 +31,18 @@ system_prompt = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 tool_declarations = load_tool_declarations(TOOLS_PATH)
 openai_tools = to_openai_tools(tool_declarations)
 
-provider = make_provider("groq")
+provider = make_provider("openai")
 
 app = FastAPI(title="Research Agent Chat")
+
+# CORS middleware for development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 STATIC_DIR = ROOT / "static"
 
@@ -57,6 +67,7 @@ async def get_config():
     return {
         "model": getattr(provider, "default_model", "unknown"),
         "tools_count": len(tool_declarations),
+        "tools_names": [t.get("name", "") for t in tool_declarations],
     }
 
 
@@ -144,6 +155,10 @@ async def chat_stream(req: ChatRequest):
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
+# Serve static files (CSS, JS, images, etc.)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 if __name__ == "__main__":

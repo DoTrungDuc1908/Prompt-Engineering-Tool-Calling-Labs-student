@@ -1,15 +1,6 @@
-# starter_v0 — tool declarations (intentionally vague).
-# Names and descriptions here are a rough first draft. Routing rules, name->handle
-# mapping, arg conventions (news/timeframe/Top), and the send-confirmation boundary
-# are NOT spelled out anywhere yet. Your job is to make these declarations + the
-# system prompt good enough that the agent routes correctly on the eval.
-#
-# If you rename a tool, keep the name in sync across:
-#   this file  ->  tools/__init__.py (TOOL_FUNCTIONS)  ->  data/eval_base.json + data/eval_research_extension.json
 tools:
-  # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Hỏi người dùng để lấy thông tin còn thiếu (handle, URL, xác nhận). Dùng khi request thiếu thông tin bắt buộc hoặc cần confirm trước hành động ghi."
     parameters:
       type: object
       properties:
@@ -19,12 +10,12 @@ tools:
       required: [question]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Lấy bài đăng gần đây của một tài khoản Twitter. Dùng khi user hỏi về tweet/post CỦA một người cụ thể."
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        screenname: {type: string, default: "", description: "Twitter handle (lowercase, vd: elonmusk, sama, karpathy). KHÔNG dùng tên đầy đủ."}
+        limit: {type: integer, default: 5, description: "Số lượng tweet muốn lấy"}
       required: [screenname]
 
   - name: social_search
@@ -49,11 +40,11 @@ tools:
       required: [query, topic, timeframe]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Lấy nội dung từ một URL. Dùng khi user đã cung cấp link cụ thể và muốn đọc/tóm tắt."
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "Địa chỉ URL đầy đủ"}
       required: [url]
 
   - name: format
@@ -77,14 +68,13 @@ tools:
         headline: {type: string, default: "", description: "Tiêu đề"}
       required: [items, template]
 
-  # ---------------- Bonus tools ----------------
   - name: send
-    description: "Gửi một đoạn văn bản đi."
+    description: "Gửi văn bản lên Telegram. Chỉ gọi sau khi đã dùng clarify để hỏi user 'có đồng ý gửi không?' và nhận được xác nhận. Không bao giờ tự gửi."
     parameters:
       type: object
       properties:
-        text: {type: string, default: "", description: "Nội dung"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        text: {type: string, default: "", description: "Nội dung cần gửi"}
+        confirmed: {type: boolean, default: false, description: "Bắt buộc = true. Chỉ true khi user nói rõ đồng ý. Mặc định false."}
       required: [text]
 
   - name: policy
@@ -98,7 +88,7 @@ tools:
       required: [query]
 
   - name: papers
-    description: "Tìm bài báo khoa học."
+    description: "Tìm bài báo khoa học trên arXiv."
     parameters:
       type: object
       properties:
@@ -108,7 +98,7 @@ tools:
       required: [query]
 
   - name: paper_text
-    description: "Lấy nội dung text của một bài báo."
+    description: "Lấy nội dung text của một bài báo từ arXiv."
     parameters:
       type: object
       properties:

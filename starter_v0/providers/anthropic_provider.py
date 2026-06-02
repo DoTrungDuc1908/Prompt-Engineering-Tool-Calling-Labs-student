@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import os
+import time
 from typing import Any
 
+from anthropic import APIError as AnthropicAPIError, RateLimitError as AnthropicRateLimitError
 from providers.base import ModelResponse, ToolCall
 
 
@@ -39,9 +41,13 @@ class AnthropicProvider:
         *,
         api_key_env: str = "ANTHROPIC_API_KEY",
         default_model: str = "claude-haiku-4-5-20251001",
+        max_retries: int = 3,
+        retry_delay: float = 2.0,
     ) -> None:
         self.api_key_env = api_key_env
-        self.default_model = default_model
+        self.default_model = os.getenv("MODEL_NAME") or default_model
+        self.max_retries = max_retries
+        self.retry_delay = retry_delay
 
     def complete(
         self,
@@ -76,13 +82,22 @@ class AnthropicProvider:
             if tool_choice == "required":
                 kwargs["tool_choice"] = {"type": "any"}
 
-        resp = Anthropic(api_key=api_key).messages.create(**kwargs)
-        text_parts: list[str] = []
-        calls: list[ToolCall] = []
-        for block in resp.content:
-            block_type = getattr(block, "type", None)
-            if block_type == "text":
-                text_parts.append(getattr(block, "text", ""))
-            elif block_type == "tool_use":
-                calls.append(ToolCall(name=getattr(block, "name"), args=dict(getattr(block, "input", {}) or {})))
-        return ModelResponse(text="\n".join(part for part in text_parts if part) or None, tool_calls=calls, raw=resp)
+        client = Anthropic(api_key=api_key)
+        last_exc: Exception | None = None
+        for attempt in range(self.max_retries):
+            try:
+                resp = client.messages.create(**kwargs)
+                text_parts: list[str] = []
+                calls: list[ToolCall] = []
+                for block in resp.content:
+                    block_type = getattr(block, "type", None)
+                    if block_type == "text":
+                        text_parts.append(getattr(block, "text", ""))
+                    elif block_type == "tool_use":
+                        calls.append(ToolCall(name=getattr(block, "name"), args=dict(getattr(block, "input", {}) or {})))
+                return ModelResponse(text="\n".join(part for part in text_parts if part) or None, tool_calls=calls, raw=resp)
+            except (AnthropicRateLimitError, AnthropicAPIError) as exc:
+                last_exc = exc
+                if attempt < self.max_retries - 1:
+                    time.sleep(self.retry_delay * (2 ** attempt))
+        raise last_exc  # type: ignore[misc]

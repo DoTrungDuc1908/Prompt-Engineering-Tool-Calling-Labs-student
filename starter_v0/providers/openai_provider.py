@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from typing import Any
 
+from openai import APIError, RateLimitError
 from providers.base import ModelResponse, ToolCall
 
 
 class OpenAIProvider:
-    """OpenAI Chat Completions provider with normalized tool_calls output."""
+    """OpenAI Chat Completions provider with normalized tool_calls output and retry."""
 
     def __init__(
         self,
@@ -16,6 +18,8 @@ class OpenAIProvider:
         api_key_env: str = "OPENAI_API_KEY",
         base_url: str | None = None,
         default_model: str = "gpt-4o-mini",
+        max_retries: int = 3,
+        retry_delay: float = 2.0,
     ) -> None:
         self.api_key_env = api_key_env
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
@@ -31,16 +35,7 @@ class OpenAIProvider:
         temperature: float = 0.0,
         tool_choice: Any | None = None,
     ) -> ModelResponse:
-        try:
-            from openai import OpenAI
-        except ImportError as exc:
-            raise RuntimeError("Install live provider dependency first: pip install openai") from exc
-
-        api_key = os.getenv(self.api_key_env)
-        if not api_key:
-            raise RuntimeError(f"Missing API key env var: {self.api_key_env}")
-
-        client = OpenAI(api_key=api_key, base_url=self.base_url)
+        client = self._build_client()
         kwargs: dict[str, Any] = {
             "model": model or self.default_model,
             "messages": messages,

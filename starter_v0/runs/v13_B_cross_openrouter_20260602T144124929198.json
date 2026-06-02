@@ -1,0 +1,533 @@
+{
+  "run_id": "v13_B_cross_openrouter_20260602T144124929198",
+  "version": "v13",
+  "artifact_version": "v13+pcd65ab4c08d3+tf9ba3065d134",
+  "prompt_hash": "cd65ab4c08d3882c3b681f19bc3218e5ba4b976d4d2a48f60a867a0ef12fa5a8",
+  "tools_hash": "f9ba3065d1349754925bfd38f3c9cbd57ccf19b3e531c066295d18098b691c49",
+  "phase": "B",
+  "suite": "cross",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\Users\\admin\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\Users\\admin\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_workflow_tools.json",
+  "dataset_id": "day04_v2_workflow_tools",
+  "dataset_role": "extension",
+  "description": "Routing checks for five team-authored local post-processing tools.",
+  "generated_at": "2026-06-02T14:41:24",
+  "summary": {
+    "total_cases": 5,
+    "measured_cases": 5,
+    "provider_error_cases": 0,
+    "passed_cases": 4,
+    "case_accuracy": 0.8,
+    "tool_routing_accuracy": 0.8,
+    "argument_accuracy": 0.8,
+    "multiturn_accuracy": null,
+    "failure_counts": {
+      "wrong_tool": 1
+    },
+    "observed_mismatch_counts": {
+      "extra_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "W01_dedupe_sources",
+      "phase": "B",
+      "suite": "cross",
+      "case_suite": "cross",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Explicit deduplication request routes to dedupe_sources."
+      },
+      "input": "Khử trùng lặp các nguồn đã thu thập này giúp mình: https://example.com/report?utm_source=mail và https://example.com/report",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "dedupe_sources",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "dedupe_sources",
+            "args": {
+              "items": [
+                {
+                  "url": "https://example.com/report?utm_source=mail"
+                },
+                {
+                  "url": "https://example.com/report"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "dedupe_sources",
+          "args": {
+            "items": [
+              {
+                "url": "https://example.com/report?utm_source=mail"
+              },
+              {
+                "url": "https://example.com/report"
+              }
+            ]
+          },
+          "result": {
+            "tool": "dedupe_sources",
+            "strategy": "url_then_title",
+            "items": [
+              {
+                "url": "https://example.com/report?utm_source=mail"
+              }
+            ],
+            "duplicate_groups": [
+              {
+                "key": "url:https://example.com/report",
+                "kept_index": 0,
+                "duplicate_indexes": [
+                  1
+                ]
+              }
+            ],
+            "summary": {
+              "input_count": 2,
+              "unique_count": 1,
+              "removed_count": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "W02_rank_sources",
+      "phase": "B",
+      "suite": "cross",
+      "case_suite": "cross",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Explicit URL-source prioritization routes to rank_sources plus URL-risk audit."
+      },
+      "input": "Xếp hạng ưu tiên các nguồn đã thu thập này: https://example.com/report và https://openai.com/research/",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "rank_sources",
+            "args": {}
+          },
+          {
+            "name": "source_audit",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_audit",
+            "args": {
+              "sources": [
+                "https://example.com/report",
+                "https://openai.com/research/"
+              ]
+            }
+          },
+          {
+            "name": "rank_sources",
+            "args": {
+              "items": [
+                {
+                  "url": "https://example.com/report"
+                },
+                {
+                  "url": "https://openai.com/research/"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_audit",
+          "args": {
+            "sources": [
+              "https://example.com/report",
+              "https://openai.com/research/"
+            ]
+          },
+          "result": {
+            "tool": "source_audit",
+            "results": [
+              {
+                "input": "https://example.com/report",
+                "normalized_url": "https://example.com/report",
+                "domain": "example.com",
+                "category": "web_source",
+                "issues": [
+                  "source_requires_manual_review"
+                ],
+                "requires_review": true
+              },
+              {
+                "input": "https://openai.com/research/",
+                "normalized_url": "https://openai.com/research",
+                "domain": "openai.com",
+                "category": "web_source",
+                "issues": [
+                  "source_requires_manual_review"
+                ],
+                "requires_review": true
+              }
+            ],
+            "summary": {
+              "total": 2,
+              "valid_urls": 2,
+              "invalid_urls": 0,
+              "duplicates": 0,
+              "social_signals": 0,
+              "preprints": 0,
+              "review_required": 2
+            },
+            "trust_boundary": "This is a heuristic URL review only. It does not fetch content, verify factual claims, or establish source credibility."
+          }
+        },
+        {
+          "tool": "rank_sources",
+          "args": {
+            "items": [
+              {
+                "url": "https://example.com/report"
+              },
+              {
+                "url": "https://openai.com/research/"
+              }
+            ]
+          },
+          "result": {
+            "tool": "rank_sources",
+            "items": [
+              {
+                "url": "https://example.com/report",
+                "original_index": 0,
+                "normalized_url": "https://example.com/report",
+                "heuristic_score": 50,
+                "reasons": [
+                  "general_web_source"
+                ],
+                "requires_review": true
+              },
+              {
+                "url": "https://openai.com/research/",
+                "original_index": 1,
+                "normalized_url": "https://openai.com/research",
+                "heuristic_score": 50,
+                "reasons": [
+                  "general_web_source"
+                ],
+                "requires_review": true
+              }
+            ],
+            "summary": {
+              "total": 2,
+              "manual_review_required": 2
+            },
+            "trust_boundary": "Scores are deterministic triage hints only. They do not verify claims or establish source credibility."
+          }
+        }
+      ]
+    },
+    {
+      "id": "W03_extract_citations",
+      "phase": "B",
+      "suite": "cross",
+      "case_suite": "cross",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Explicit citation extraction request routes to extract_citations."
+      },
+      "input": "Trích xuất citation và URL từ đoạn text hiện có này: Xem https://openai.com/research/ và paper arXiv 1706.03762.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_citations",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "extract_citations",
+            "args": {
+              "text": "Xem https://openai.com/research/ và paper arXiv 1706.03762."
+            }
+          },
+          {
+            "name": "extract_citations",
+            "args": {
+              "text": "Xem https://openai.com/research/ và paper arXiv 1706.03762."
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "extra_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "extra tool call extract_citations"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "extract_citations",
+          "args": {
+            "text": "Xem https://openai.com/research/ và paper arXiv 1706.03762."
+          },
+          "result": {
+            "tool": "extract_citations",
+            "citations": [
+              {
+                "kind": "url",
+                "value": "https://openai.com/research",
+                "url": "https://openai.com/research",
+                "domain": "openai.com"
+              },
+              {
+                "kind": "arxiv_id",
+                "value": "1706.03762",
+                "url": "https://arxiv.org/abs/1706.03762",
+                "domain": "arxiv.org"
+              }
+            ],
+            "summary": {
+              "total": 2,
+              "urls": 1,
+              "standalone_arxiv_ids": 1
+            }
+          }
+        },
+        {
+          "tool": "extract_citations",
+          "args": {
+            "text": "Xem https://openai.com/research/ và paper arXiv 1706.03762."
+          },
+          "result": {
+            "tool": "extract_citations",
+            "citations": [
+              {
+                "kind": "url",
+                "value": "https://openai.com/research",
+                "url": "https://openai.com/research",
+                "domain": "openai.com"
+              },
+              {
+                "kind": "arxiv_id",
+                "value": "1706.03762",
+                "url": "https://arxiv.org/abs/1706.03762",
+                "domain": "arxiv.org"
+              }
+            ],
+            "summary": {
+              "total": 2,
+              "urls": 1,
+              "standalone_arxiv_ids": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "W04_claim_matrix",
+      "phase": "B",
+      "suite": "cross",
+      "case_suite": "cross",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Explicit structured claim organization request routes to claim_matrix."
+      },
+      "input": "Lập claim matrix từ records có cấu trúc này: [{\"claim\":\"Model đạt 90%\",\"source\":\"source-a\",\"stance\":\"supports\"},{\"claim\":\"Model đạt 90%\",\"source\":\"source-b\",\"stance\":\"disputes\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "claim_matrix",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "claim_matrix",
+            "args": {
+              "records": [
+                {
+                  "claim": "Model đạt 90%",
+                  "source": "source-a",
+                  "stance": "supports"
+                },
+                {
+                  "claim": "Model đạt 90%",
+                  "source": "source-b",
+                  "stance": "disputes"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "claim_matrix",
+          "args": {
+            "records": [
+              {
+                "claim": "Model đạt 90%",
+                "source": "source-a",
+                "stance": "supports"
+              },
+              {
+                "claim": "Model đạt 90%",
+                "source": "source-b",
+                "stance": "disputes"
+              }
+            ]
+          },
+          "result": {
+            "tool": "claim_matrix",
+            "claims": [
+              {
+                "claim": "Model đạt 90%",
+                "supports": [
+                  "source-a"
+                ],
+                "disputes": [
+                  "source-b"
+                ],
+                "mentions": [],
+                "has_conflict": true
+              }
+            ],
+            "summary": {
+              "claim_count": 1,
+              "record_count": 2,
+              "conflict_count": 1
+            },
+            "trust_boundary": "This matrix organizes user-supplied stances only. It does not infer stance from raw text or verify factual claims."
+          }
+        }
+      ]
+    },
+    {
+      "id": "W05_briefing_outline",
+      "phase": "B",
+      "suite": "cross",
+      "case_suite": "cross",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Explicit briefing-outline request routes to briefing_outline."
+      },
+      "input": "Tạo outline briefing executive từ các item đã thu thập: [{\"title\":\"AI update\",\"url\":\"https://example.com/ai\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "briefing_outline",
+            "args": {
+              "audience": "executive"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "briefing_outline",
+            "args": {
+              "items": [
+                {
+                  "title": "AI update",
+                  "url": "https://example.com/ai"
+                }
+              ],
+              "audience": "executive",
+              "title": "Research briefing"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "briefing_outline",
+          "args": {
+            "items": [
+              {
+                "title": "AI update",
+                "url": "https://example.com/ai"
+              }
+            ],
+            "audience": "executive",
+            "title": "Research briefing"
+          },
+          "result": {
+            "tool": "briefing_outline",
+            "audience": "executive",
+            "sections": [
+              "Executive summary",
+              "Business impact",
+              "Risks",
+              "Recommended next steps",
+              "Evidence"
+            ],
+            "markdown": "# Research briefing\n\nAudience: executive\n\n## Executive summary\n- Add evidence-backed points here.\n\n## Business impact\n- Add evidence-backed points here.\n\n## Risks\n- Add evidence-backed points here.\n\n## Recommended next steps\n- Add evidence-backed points here.\n\n## Evidence\n- [1] AI update - [example.com](https://example.com/ai)",
+            "summary": {
+              "item_count": 1,
+              "missing_source_count": 0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

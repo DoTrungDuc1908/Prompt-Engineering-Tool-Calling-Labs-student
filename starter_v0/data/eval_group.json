@@ -1,7 +1,108 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "description": "Team-authored regression cases: exactly 5 single-turn and 5 multi-turn cases covering routing, arguments, clarification, confirmation boundaries, and the local source-audit tool.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_timeline_handle_limit",
+      "phase": "B",
+      "query": "Lấy 7 tweet mới nhất của @karpathy.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 7}}]},
+      "metadata": {"what_it_tests": "Explicit handle must lose @ and preserve limit=7."}
+    },
+    {
+      "id": "G02_social_latest",
+      "phase": "B",
+      "query": "Tìm các tweet mới nhất về AI agents trên Twitter.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"search_type": "Latest"}}]},
+      "metadata": {"what_it_tests": "Topic-based Twitter request routes to social_search with Latest."}
+    },
+    {
+      "id": "G03_lookup_month",
+      "phase": "B",
+      "query": "Tìm tin tức bảo mật AI nổi bật trong tháng này.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"topic": "news", "timeframe": "month"}}]},
+      "metadata": {"what_it_tests": "Current web news for this month maps to topic=news and timeframe=month."}
+    },
+    {
+      "id": "G04_explicit_source_audit",
+      "phase": "B",
+      "query": "Audit các nguồn citation này giúp mình: https://x.com/sama/status/1 và https://arxiv.org/abs/1706.03762",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "source_audit", "args": {"sources": ["https://x.com/sama/status/1", "https://arxiv.org/abs/1706.03762"]}}]},
+      "metadata": {"what_it_tests": "Explicit citation audit uses the local source_audit tool with all supplied URLs."}
+    },
+    {
+      "id": "G05_send_requires_confirmation",
+      "phase": "B",
+      "query": "Đăng bản tin AI sáng nay lên Telegram giúp mình.",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"what_it_tests": "Initial publish request must pause for explicit yes/no confirmation."}
+    },
+    {
+      "id": "G06_multiturn_account_and_limit_override",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Lấy 10 tweet mới nhất của Sam Altman."},
+        {"role": "user", "content": "Đổi sang Andrej Karpathy."},
+        {"role": "user", "content": "Chỉ lấy 2 tweet thôi."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 2}}]},
+      "metadata": {"what_it_tests": "New account and count override older multi-turn values."}
+    },
+    {
+      "id": "G07_multiturn_news_carryover",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tìm tin AI trong tháng này."},
+        {"role": "user", "content": "Chuyển chủ đề sang robotics."},
+        {"role": "user", "content": "Vẫn lấy tin tức trong tháng nhé."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "robotics", "topic": "news", "timeframe": "month"}}]},
+      "metadata": {"what_it_tests": "Carry news/month context while replacing only the query."}
+    },
+    {
+      "id": "G08_multiturn_fill_url",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài viết này giúp mình."},
+        {"role": "user", "content": "Link đây: https://openai.com/research/"},
+        {"role": "user", "content": "Chỉ đọc đúng URL vừa gửi."}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research/"}}]},
+      "metadata": {"what_it_tests": "Use a URL supplied in an earlier turn without inventing or searching."}
+    },
+    {
+      "id": "G09_multiturn_switch_to_social_top",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Tìm trên web tin về OpenAI."},
+        {"role": "user", "content": "Đổi sang Twitter nhé."},
+        {"role": "user", "content": "Chỉ lấy các tweet top, vẫn về OpenAI."}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "OpenAI", "search_type": "Top"}}]},
+      "metadata": {"what_it_tests": "Latest source switch wins and top maps to search_type=Top."}
+    },
+    {
+      "id": "G10_multiturn_collect_sources_for_audit",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Mình cần audit các nguồn citation."},
+        {"role": "user", "content": "Nguồn đầu: https://example.com/report?utm_source=newsletter"},
+        {"role": "user", "content": "Thêm https://x.com/sama/status/1 rồi kiểm tra cả hai."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "source_audit", "args": {"sources": ["https://example.com/report?utm_source=newsletter", "https://x.com/sama/status/1"]}}]},
+      "metadata": {"what_it_tests": "Collect audit URLs across turns and pass both source strings."}
+    }
+  ]
 }

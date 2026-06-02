@@ -200,6 +200,20 @@ Direct tool test (verifies the bot token/chat only):
 python -c "from tools import TOOL_FUNCTIONS as T; print(T['send']('AI20k test message', confirmed=True))"
 ```
 
+## 7. Local Source Audit — `source_audit`
+
+`source_audit` is a team-authored local tool. It needs no API key and does not
+fetch content or verify claims. It flags invalid URLs, duplicate URLs, social
+signals, and arXiv preprints for manual review.
+
+Quick test:
+
+```bash
+python -c "from tools import TOOL_FUNCTIONS as T; print(T['source_audit'](['https://x.com/sama/status/1', 'https://arxiv.org/abs/1706.03762'])['summary'])"
+python -m unittest discover -s tests -v
+python scripts/validate_static.py
+```
+
 ## Final Checklist
 
 Before class, at least one person per group should have:
@@ -210,4 +224,5 @@ Before class, at least one person per group should have:
 - `RAPIDAPI_KEY`
 - optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - optional `ARXIV_USER_AGENT`
+- `python scripts/validate_static.py` passes
 - `python scripts/preflight_provider.py --provider openrouter` passes

@@ -158,3 +158,89 @@ tools:
         data_points: {type: object, description: "Dictionary of category keys and numeric float values (e.g. {'v0': 44.4, 'v1': 77.8})."}
         chart_type: {type: string, enum: [bar, line], default: "bar", description: "The chart visualization style (bar or line)."}
       required: [title, data_points, chart_type]
+
+  - name: wikipedia
+    description: "Tra cứu nội dung từ Wikipedia. Dùng khi user hỏi về kiến thức tổng quát, lịch sử, khoa học, danh nhân. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        query: {type: string, default: "", description: "Từ khóa tìm kiếm"}
+        max_results: {type: integer, default: 5, description: "Số lượng kết quả"}
+      required: [query]
+
+  - name: define
+    description: "Tra nghĩa từ vựng tiếng Anh (từ loại, định nghĩa, ví dụ). Dùng khi user hỏi 'nghĩa là gì', 'define', 'định nghĩa'. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        word: {type: string, default: "", description: "Từ cần tra (tiếng Anh)"}
+      required: [word]
+
+  - name: hn_search
+    description: "Tìm bài viết trên Hacker News theo từ khóa. Dùng khi user muốn tìm thảo luận kỹ thuật trên HN. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        query: {type: string, default: "", description: "Từ khóa tìm kiếm"}
+        max_results: {type: integer, default: 5, description: "Số lượng kết quả"}
+      required: [query]
+
+  - name: weather
+    description: "Tra thời tiết hiện tại theo tọa độ (nhiệt độ, độ ẩm, tốc độ gió). Dùng khi user hỏi thời tiết. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        latitude: {type: number, default: 0.0, description: "Vĩ độ"}
+        longitude: {type: number, default: 0.0, description: "Kinh độ"}
+      required: [latitude, longitude]
+
+  - name: country_info
+    description: "Tra thông tin quốc gia (tên, thủ đô, dân số, diện tích, ngôn ngữ, tiền tệ, cờ). Dùng khi user hỏi về một quốc gia. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        country: {type: string, default: "", description: "Tên quốc gia (tiếng Anh, VD: vietnam, france)"}
+      required: [country]
+
+  - name: ip_info
+    description: "Tra thông tin địa lý của một địa chỉ IP (quốc gia, thành phố, ISP). Dùng khi user hỏi IP ở đâu. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        ip: {type: string, default: "", description: "Địa chỉ IP cần tra"}
+      required: [ip]
+
+  - name: math_calc
+    description: "Tính toán biểu thức toán học. Dùng sympy nếu có, fallback eval nếu không. Hỗ trợ +, -, *, /, ^, sin, cos, sqrt, v.v."
+    parameters:
+      type: object
+      properties:
+        expression: {type: string, default: "", description: "Biểu thức toán học (VD: 2+2, sin(pi/2), sqrt(144))"}
+      required: [expression]
+
+  - name: hackernews
+    description: "Lấy danh sách top stories hiện tại trên Hacker News. Không cần từ khóa. Dùng khi user hỏi 'HN top stories', 'hacker news'. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        max_results: {type: integer, default: 5, description: "Số lượng story muốn lấy"}
+      required: [max_results]
+
+  - name: exchange_rate
+    description: "Tra tỷ giá ngoại tệ từ ECB. Dùng khi user hỏi tỷ giá, đổi tiền. Hỗ trợ base, target, amount. Không cần API key."
+    parameters:
+      type: object
+      properties:
+        base: {type: string, default: "USD", description: "Mã tiền tệ gốc (VD: USD, EUR, GBP, JPY, VND)"}
+        target: {type: string, default: "EUR", description: "Mã tiền tệ đích"}
+        amount: {type: number, default: 1.0, description: "Số lượng cần quy đổi"}
+      required: [base, target, amount]
+
+  - name: crypto_price
+    description: "Tra giá cryptocurrency (Bitcoin, Ethereum, v.v.) theo USD hoặc VND. Dùng khi user hỏi giá crypto, bitcoin. CoinGecko API free, không cần key."
+    parameters:
+      type: object
+      properties:
+        coin: {type: string, default: "bitcoin", description: "Tên coin (VD: bitcoin, ethereum, solana)"}
+        vs_currency: {type: string, default: "usd", description: "Tiền tệ quy đổi (usd, vnd, eur)"}
+      required: [coin, vs_currency]

@@ -23,8 +23,14 @@ class OpenAIProvider:
     ) -> None:
         self.api_key_env = api_key_env
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
-        self.default_model = os.getenv("OPENAI_MODEL") or default_model
+        self.default_model = os.getenv("OPENAI_MODEL") or os.getenv("MODEL_NAME") or default_model
 
+    def _build_client(self):
+        from openai import OpenAI
+        return OpenAI(
+            api_key=os.getenv(self.api_key_env),
+            base_url=self.base_url,
+        )
 
     def complete(
         self,

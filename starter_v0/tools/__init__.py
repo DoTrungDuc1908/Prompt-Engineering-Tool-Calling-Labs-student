@@ -17,6 +17,16 @@ from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
+from .wikipedia.tool import search_wikipedia
+from .define.tool import define_word
+from .hn_search.tool import search_hn
+from .weather.tool import get_weather
+from .country_info.tool import country_info
+from .ip_info.tool import ip_lookup
+from .math_calc.tool import calculate
+from .hackernews.tool import top_hn_stories
+from .exchange_rate.tool import exchange_rate
+from .crypto_price.tool import crypto_price
 from .get_time.tool import get_current_time
 from .text_statistics.tool import get_text_statistics
 from .sentiment_analysis.tool import analyze_sentiment
@@ -41,6 +51,16 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
+    "wikipedia": search_wikipedia,
+    "define": define_word,
+    "hn_search": search_hn,
+    "weather": get_weather,
+    "country_info": country_info,
+    "ip_info": ip_lookup,
+    "math_calc": calculate,
+    "hackernews": top_hn_stories,
+    "exchange_rate": exchange_rate,
+    "crypto_price": crypto_price,
     "get_time": get_current_time,
     "text_statistics": get_text_statistics,
     "sentiment_analysis": analyze_sentiment,

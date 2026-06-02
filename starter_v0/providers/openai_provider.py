@@ -18,8 +18,9 @@ class OpenAIProvider:
         default_model: str = "gpt-4o-mini",
     ) -> None:
         self.api_key_env = api_key_env
-        self.base_url = base_url
-        self.default_model = default_model
+        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
+        self.default_model = os.getenv("OPENAI_MODEL") or default_model
+
 
     def complete(
         self,
@@ -50,7 +51,7 @@ class OpenAIProvider:
         if tool_choice is not None:
             kwargs["tool_choice"] = tool_choice
 
-        resp = client.chat.completions.create(**kwargs)
+        resp = client.chat.completions.create(**kwargs, timeout=120.0)
         msg = resp.choices[0].message
         calls: list[ToolCall] = []
         for call in msg.tool_calls or []:

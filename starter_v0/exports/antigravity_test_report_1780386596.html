@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Antigravity Test Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;800&family=Fira+Code&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        
+            body {
+                background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+                color: #f8fafc;
+                font-family: 'Inter', 'Outfit', sans-serif;
+                min-height: 100vh;
+                margin: 0;
+                padding: 40px 20px;
+                display: flex;
+                justify-content: center;
+            }
+            .container {
+                max-width: 900px;
+                width: 100%;
+                background: rgba(30, 41, 59, 0.45);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 24px;
+                padding: 40px;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            }
+            h1 {
+                color: #38bdf8;
+                border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+                padding-bottom: 15px;
+                font-weight: 800;
+            }
+            h2, h3 {
+                color: #818cf8;
+                margin-top: 30px;
+            }
+            pre {
+                background: rgba(15, 23, 42, 0.7) !important;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+                padding: 16px;
+                overflow-x: auto;
+            }
+            code {
+                font-family: 'Fira Code', 'Consolas', monospace;
+                color: #38bdf8;
+            }
+            blockquote {
+                border-left: 4px solid #818cf8;
+                background: rgba(129, 140, 248, 0.1);
+                margin: 20px 0;
+                padding: 10px 20px;
+                border-radius: 0 12px 12px 0;
+            }
+            a { color: #38bdf8; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }
+            th, td {
+                padding: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: left;
+            }
+            th { background: rgba(56, 189, 248, 0.1); }
+            
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            font-size: 0.85em;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="content">Loading report content...</div>
+        
+        <div class="footer">
+            <span>Generated dynamically by Antigravity Research Agent Explorer</span>
+            <span>Theme: Glassmorphism</span>
+        </div>
+    </div>
+
+    <script>
+        // Raw Markdown content from Python
+        const rawMarkdown = `# Antigravity Report
+This is a carefully tested markdown document.
+- It contains **bold text**
+- *Italic text*
+- [A link](https://google.com)
+
+## Code Example
+\`\`\`python
+def hello():
+    return "world"
+\`\`\`
+`;
+        
+        // Parse and render markdown dynamically using Marked.js
+        document.getElementById('content').innerHTML = marked.parse(rawMarkdown);
+    </script>
+</body>
+</html>

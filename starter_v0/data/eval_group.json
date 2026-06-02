@@ -1,7 +1,108 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type, và expect.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_single_news_today",
+      "phase": "B", "suite": "group",
+      "query": "Tìm tin tức AI hôm nay",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "AI", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"skill": "routing_news_today", "difficulty": "easy", "what_it_tests": "Tìm tin tức AI hôm nay -> lookup query=AI topic=news timeframe=day."}
+    },
+    {
+      "id": "G02_single_confirm_send",
+      "phase": "B", "suite": "group",
+      "query": "Đăng bài viết mới nhất của mình lên Telegram",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"skill": "confirm_before_send", "difficulty": "medium", "what_it_tests": "Yêu cầu ghi/gửi lên Telegram -> Phải hỏi xác nhận yes_no trước."}
+    },
+    {
+      "id": "G03_single_missing_handle",
+      "phase": "B", "suite": "group",
+      "query": "Tóm tắt 10 bài đăng mới nhất giúp mình",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"skill": "missing_twitter_handle", "difficulty": "medium", "what_it_tests": "Đòi xem tweet mà không nói của ai -> Phải hỏi lại xin handle."}
+    },
+    {
+      "id": "G04_single_out_of_scope",
+      "phase": "B", "suite": "group",
+      "query": "Bạn có thể chỉ cho mình cách làm bánh chưng không?",
+      "failure_type": "out_of_scope",
+      "expect": {"no_tool": true, "behavior": "refuse"},
+      "metadata": {"skill": "general_refusal", "difficulty": "easy", "what_it_tests": "Hỏi cách làm bánh chưng ngoài phạm vi research -> Từ chối khéo léo."}
+    },
+    {
+      "id": "G05_single_popular_tweets",
+      "phase": "B", "suite": "group",
+      "query": "Tìm bài đăng phổ biến nhất về OpenAI trên Twitter",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "OpenAI", "search_type": "Top"}}]},
+      "metadata": {"skill": "popular_tweets_top", "difficulty": "medium", "what_it_tests": "Tìm bài đăng phổ biến -> search_type=Top."}
+    },
+    {
+      "id": "G06_multi_clarify_fill_limit",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt 10 tweet mới nhất giúp mình"},
+        {"role": "user", "content": "Của sama"},
+        {"role": "user", "content": "Đọc đúng 10 cái nhé"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "sama", "limit": 10}}]},
+      "metadata": {"skill": "multiturn_tweets_limit", "difficulty": "hard", "what_it_tests": "Mang limit=10 từ turn 1 + map tên sama từ turn 2 và chạy timeline."}
+    },
+    {
+      "id": "G07_multi_carryover_ev",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tin công nghệ hôm nay có gì?"},
+        {"role": "user", "content": "Còn về xe điện (EV) thì sao?"},
+        {"role": "user", "content": "Tìm xe điện thôi, vẫn là tin hôm nay"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "xe điện", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"skill": "multiturn_carry_timeframe", "difficulty": "hard", "what_it_tests": "Mang timeframe=day và topic=news từ turn 1 sang turn 3 cho query xe điện."}
+    },
+    {
+      "id": "G08_multi_correction_karpathy",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Xem tweet của Sam Altman"},
+        {"role": "user", "content": "À nhầm, của Andrej Karpathy"},
+        {"role": "user", "content": "Lấy 5 tweet gần đây nhất"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 5}}]},
+      "metadata": {"skill": "multiturn_handle_correction", "difficulty": "hard", "what_it_tests": "Đính chính tên người từ Sam Altman sang Andrej Karpathy -> map thành karpathy, mang sang turn 3 với limit=5."}
+    },
+    {
+      "id": "G09_multi_clarify_url",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài này giúp mình"},
+        {"role": "user", "content": "https://openai.com/research/instruction-following"},
+        {"role": "user", "content": "Chỉ đọc bài từ link đó thôi"}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research/instruction-following"}}]},
+      "metadata": {"skill": "multiturn_url_fetch", "difficulty": "medium", "what_it_tests": "Cung cấp URL ở turn 2 -> turn 3 chạy fetch đúng link đó."}
+    },
+    {
+      "id": "G10_multi_switch_web",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm bài đăng về GPT-5 trên Twitter"},
+        {"role": "user", "content": "Bỏ Twitter đi, chuyển sang tìm tin tức trên web"},
+        {"role": "user", "content": "Giữ nguyên chủ đề GPT-5"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "GPT-5", "topic": "news"}}]},
+      "metadata": {"skill": "multiturn_switch_tweets_to_lookup", "difficulty": "hard", "what_it_tests": "Đổi tool từ Twitter sang Web News ở turn 2 -> giữ query GPT-5 ở turn 3."}
+    }
+  ]
 }

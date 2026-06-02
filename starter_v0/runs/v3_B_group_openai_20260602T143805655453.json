@@ -1,0 +1,635 @@
+{
+  "run_id": "v3_B_group_openai_20260602T143805655453",
+  "version": "v3",
+  "artifact_version": "v3+p4e3b86797e1d+t8504e07f7d04",
+  "prompt_hash": "4e3b86797e1d7d2d99d0c7f2c156e9c0c78f4b5ac5d87c29cbfd9a5944581c7e",
+  "tools_hash": "8504e07f7d0426208c01d55a643d35309db1b2ff973a7388feabcd8e01122648",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openai",
+  "model": "minimaxai/minimax-m2.7",
+  "system_prompt": "C:\\ai_vinuni\\code_vinuni\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\ai_vinuni\\code_vinuni\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type, và expect.",
+  "generated_at": "2026-06-02T14:38:05",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 9,
+    "provider_error_cases": 1,
+    "passed_cases": 8,
+    "case_accuracy": 0.8889,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 0.8889,
+    "multiturn_accuracy": 0.75,
+    "failure_counts": {
+      "wrong_arg_value": 1
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_single_news_today",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_news_today",
+        "difficulty": "easy",
+        "what_it_tests": "Tìm tin tức AI hôm nay -> lookup query=AI topic=news timeframe=day."
+      },
+      "input": "Tìm tin tức AI hôm nay",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "AI",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_single_confirm_send",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirm_before_send",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu ghi/gửi lên Telegram -> Phải hỏi xác nhận yes_no trước."
+      },
+      "input": "Đăng bài viết mới nhất của mình lên Telegram",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn đăng bài viết mới nhất lên Telegram? Tôi cần biết: (1) Nội dung bài viết bạn muốn đăng là gì? (2) Bạn muốn đăng lên kênh/chat Telegram nào?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn đăng bài viết mới nhất lên Telegram? Tôi cần biết: (1) Nội dung bài viết bạn muốn đăng là gì? (2) Bạn muốn đăng lên kênh/chat Telegram nào?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn đăng bài viết mới nhất lên Telegram? Tôi cần biết: (1) Nội dung bài viết bạn muốn đăng là gì? (2) Bạn muốn đăng lên kênh/chat Telegram nào?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_single_missing_handle",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "missing_twitter_handle",
+        "difficulty": "medium",
+        "what_it_tests": "Đòi xem tweet mà không nói của ai -> Phải hỏi lại xin handle."
+      },
+      "input": "Tóm tắt 10 bài đăng mới nhất giúp mình",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn tôi tóm tắt 10 bài đăng mới nhất từ nền tảng nào? Vui lòng cung cấp thêm thông tin, ví dụ: tên tài khoản Twitter/X (như @sama, @elonmusk), hoặc một đường link cụ thể.",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn tôi tóm tắt 10 bài đăng mới nhất từ nền tảng nào? Vui lòng cung cấp thêm thông tin, ví dụ: tên tài khoản Twitter/X (như @sama, @elonmusk), hoặc một đường link cụ thể.",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn tôi tóm tắt 10 bài đăng mới nhất từ nền tảng nào? Vui lòng cung cấp thêm thông tin, ví dụ: tên tài khoản Twitter/X (như @sama, @elonmusk), hoặc một đường link cụ thể.",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_single_out_of_scope",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "general_refusal",
+        "difficulty": "easy",
+        "what_it_tests": "Hỏi cách làm bánh chưng ngoài phạm vi research -> Từ chối khéo léo."
+      },
+      "input": "Bạn có thể chỉ cho mình cách làm bánh chưng không?",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "\n\nXin lỗi, mình không thể hỗ trợ bạn về việc này. Mình là một trợ lý nghiên cứu, được thiết kế để hỗ trợ các tác vụ liên quan đến:\n\n- **Tìm kiếm tin tức** và thông tin trên web\n- **Tìm kiếm bài báo khoa học**\n- **Đọc và tóm tắt nội dung** từ các trang web\n- **Tìm kiếm trên mạng xã hội** (Twitter/X)\n- **Phân tích văn bản** (thống kê, cảm xúc)\n\nĐể tìm công thức làm bánh chưng, bạn có thể thử tìm kiếm trên Google hoặc các trang web nấu ăn nhé! 🍲",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G05_single_popular_tweets",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "popular_tweets_top",
+        "difficulty": "medium",
+        "what_it_tests": "Tìm bài đăng phổ biến -> search_type=Top."
+      },
+      "input": "Tìm bài đăng phổ biến nhất về OpenAI trên Twitter",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "OpenAI",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "OpenAI",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "OpenAI",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_clarify_fill_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_tweets_limit",
+        "difficulty": "hard",
+        "what_it_tests": "Mang limit=10 từ turn 1 + map tên sama từ turn 2 và chạy timeline."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt 10 tweet mới nhất giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Của sama"
+        },
+        {
+          "role": "user",
+          "content": "Đọc đúng 10 cái nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 10
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "sama",
+              "limit": 10
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "sama",
+            "limit": 10
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_carryover_ev",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_carry_timeframe",
+        "difficulty": "hard",
+        "what_it_tests": "Mang timeframe=day và topic=news từ turn 1 sang turn 3 cho query xe điện."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tin công nghệ hôm nay có gì?"
+        },
+        {
+          "role": "user",
+          "content": "Còn về xe điện (EV) thì sao?"
+        },
+        {
+          "role": "user",
+          "content": "Tìm xe điện thôi, vẫn là tin hôm nay"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "xe điện",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "EV",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_arg_value",
+        "failures": [
+          "query: expected 'xe điện', got 'EV'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "EV",
+            "topic": "news",
+            "timeframe": "day"
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_correction_karpathy",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_handle_correction",
+        "difficulty": "hard",
+        "what_it_tests": "Đính chính tên người từ Sam Altman sang Andrej Karpathy -> map thành karpathy, mang sang turn 3 với limit=5."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Xem tweet của Sam Altman"
+        },
+        {
+          "role": "user",
+          "content": "À nhầm, của Andrej Karpathy"
+        },
+        {
+          "role": "user",
+          "content": "Lấy 5 tweet gần đây nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 5
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multi_clarify_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_url_fetch",
+        "difficulty": "medium",
+        "what_it_tests": "Cung cấp URL ở turn 2 -> turn 3 chạy fetch đúng link đó."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài này giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "https://openai.com/research/instruction-following"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ đọc bài từ link đó thôi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://openai.com/research/instruction-following"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "missing_info",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "RateLimitError: Error code: 429 - {'status': 429, 'title': 'Too Many Requests'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G10_multi_switch_web",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_switch_tweets_to_lookup",
+        "difficulty": "hard",
+        "what_it_tests": "Đổi tool từ Twitter sang Web News ở turn 2 -> giữ query GPT-5 ở turn 3."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng về GPT-5 trên Twitter"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter đi, chuyển sang tìm tin tức trên web"
+        },
+        {
+          "role": "user",
+          "content": "Giữ nguyên chủ đề GPT-5"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "GPT-5",
+              "topic": "news"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "GPT-5",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "GPT-5",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "error": "RuntimeError",
+            "message": "Missing TAVILY_API_KEY env var"
+          }
+        }
+      ]
+    }
+  ]
+}

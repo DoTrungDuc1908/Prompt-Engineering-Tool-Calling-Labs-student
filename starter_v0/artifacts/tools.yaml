@@ -28,25 +28,25 @@ tools:
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Search social media (Twitter/X) for a specific query topic. Set search_type='Top' for popular posts, and 'Latest' for recent posts. Only call once per search query, do not make duplicate calls."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
-      required: [query]
+        query: {type: string, default: "", description: "Strictly the core keyword topic to search (e.g. 'AI', 'GPT-5')."}
+        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Top for popular, Latest for recent."}
+        limit: {type: integer, default: 5, description: "Number of posts to fetch."}
+      required: [query, search_type]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Lookup information on the internet. MUST set topic='news' strictly for news, current events, recent updates, 'tin tức', 'hôm nay có gì', or articles."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
-        max_results: {type: integer, default: 5, description: "Số kết quả"}
-      required: [query]
+        query: {type: string, default: "", description: "Strictly the core keyword topic to search (e.g. 'AI', 'robotics')."}
+        topic: {type: string, enum: [general, news], default: "general", description: "Must set to 'news' strictly for news/tin tức/tin nổi bật/current events/articles. Otherwise set to 'general'."}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Filter by timeframe (day for today/hôm nay, week for this week, month, year)."}
+        max_results: {type: integer, default: 5, description: "Number of results."}
+      required: [query, topic, timeframe]
 
   - name: fetch
     description: "Lấy nội dung từ một địa chỉ."
@@ -116,3 +116,55 @@ tools:
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
+
+  - name: get_time
+    description: "Get the current local date and time of the system, including timezone and day of the week."
+    parameters:
+      type: object
+      properties: {}
+
+  - name: text_statistics
+    description: "Calculates statistics for a block of text, such as word count, character count, sentence count, reading time, and vocabulary diversity."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, description: "The block of text to analyze."}
+      required: [text]
+
+  - name: sentiment_analysis
+    description: "Analyzes the sentiment of a text block (returns Positive, Negative, or Neutral sentiment label and confidence score)."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, description: "The text block to analyze."}
+      required: [text]
+
+  - name: agent_memory
+    description: "Saves or retrieves persistent knowledge, notes, or preferences to/from the agent's long-term memory store. Set action='save' to save, 'load' to retrieve, 'delete' to remove, or 'list' to show keys."
+    parameters:
+      type: object
+      properties:
+        action: {type: string, enum: [save, load, list, delete], default: "list", description: "The memory operation to execute."}
+        key: {type: string, default: "", description: "The specific key identifier for the memory entry."}
+        value: {type: string, default: "", description: "The content value to store (required only for action='save')."}
+      required: [action]
+
+  - name: export_report
+    description: "Compiles and exports markdown text or research findings into a beautifully-styled, standalone HTML report file in the exports directory."
+    parameters:
+      type: object
+      properties:
+        title: {type: string, default: "Research Report", description: "The title of the generated HTML report."}
+        content_markdown: {type: string, default: "", description: "Full Markdown formatted string to compile into the report."}
+        theme: {type: string, enum: [glassmorphism, slate, corporate], default: "glassmorphism", description: "Visual aesthetic theme styling for the report."}
+      required: [title, content_markdown, theme]
+
+  - name: visualize_data
+    description: "Generates a premium, high-quality SVG bar chart or line chart from a dictionary of category-value data points. Saves the chart as an SVG file."
+    parameters:
+      type: object
+      properties:
+        title: {type: string, default: "Data Chart", description: "Title of the generated chart."}
+        data_points: {type: object, description: "Dictionary of category keys and numeric float values (e.g. {'v0': 44.4, 'v1': 77.8})."}
+        chart_type: {type: string, enum: [bar, line], default: "bar", description: "The chart visualization style (bar or line)."}
+      required: [title, data_points, chart_type]

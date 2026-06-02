@@ -178,9 +178,21 @@ For a private channel:
 2. Post a fresh message in the channel.
 3. Run:
 
+**For macOS / Linux (bash):**
 ```bash
 curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getUpdates"
 ```
+
+**For Windows (PowerShell):**
+```powershell
+Invoke-RestMethod -Uri "https://api.telegram.org/bot$($env:TELEGRAM_BOT_TOKEN)/getUpdates"
+```
+
+**For Windows (CMD):**
+```cmd
+curl "https://api.telegram.org/bot%TELEGRAM_BOT_TOKEN%/getUpdates"
+```
+
 
 4. Find:
 

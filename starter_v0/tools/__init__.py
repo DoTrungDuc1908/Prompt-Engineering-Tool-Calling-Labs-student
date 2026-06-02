@@ -17,6 +17,12 @@ from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
+from .get_time.tool import get_current_time
+from .text_statistics.tool import get_text_statistics
+from .sentiment_analysis.tool import analyze_sentiment
+from .agent_memory.tool import manage_memory
+from .export_report.tool import export_premium_report
+from .visualize_data.tool import generate_svg_chart
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -35,6 +41,12 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
+    "get_time": get_current_time,
+    "text_statistics": get_text_statistics,
+    "sentiment_analysis": analyze_sentiment,
+    "agent_memory": manage_memory,
+    "export_report": export_premium_report,
+    "visualize_data": generate_svg_chart,
 }
 
 

@@ -98,6 +98,7 @@ Eval chấm theo **đúng tên tool**. Nếu nhóm đổi tên một tool cho r�
 
 Run from `starter_v0/`:
 
+**For macOS / Linux:**
 ```bash
 cd starter_v0
 python3 -m venv .venv
@@ -105,6 +106,25 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 ```
+
+**For Windows (PowerShell):**
+```powershell
+cd starter_v0
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+Copy-Item .env.example .env
+```
+
+**For Windows (CMD):**
+```cmd
+cd starter_v0
+python -m venv .venv
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+copy .env.example .env
+```
+
 
 Fill `.env`. Minimum recommended:
 

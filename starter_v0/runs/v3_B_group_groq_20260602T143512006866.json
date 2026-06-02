@@ -1,0 +1,841 @@
+{
+  "run_id": "v3_B_group_groq_20260602T143512006866",
+  "version": "v3",
+  "artifact_version": "v3+p4c60dc5f765a+t643120230e8c",
+  "prompt_hash": "4c60dc5f765a19e2c8ac7aebeda5dffde3359a850909701c6b617a78d21a84d5",
+  "tools_hash": "643120230e8c6f23946d24389a8e1521268a7b2117952ecd32690cc4e1f53bd2",
+  "phase": "B",
+  "suite": "group",
+  "provider": "groq",
+  "model": "qwen/qwen3-32b",
+  "system_prompt": "D:\\Code\\ai\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\Code\\ai\\Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover các tool mới (wikipedia, define, hn_search, weather, math_calc, ip_info, exchange_rate, crypto_price, hackernews, country_info). 5 single turn + 5 multi turn = 10 cases.",
+  "generated_at": "2026-06-02T14:35:12",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 6,
+    "case_accuracy": 0.6,
+    "tool_routing_accuracy": 0.8,
+    "argument_accuracy": 0.6,
+    "multiturn_accuracy": 0.8,
+    "failure_counts": {
+      "wrong_tool": 4
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 2,
+      "missing_tool_call": 1,
+      "extra_tool_call": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_wikipedia_search",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_wikipedia",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu tìm hiểu về khái niệm/chủ đề → wikipedia, không phải web_search."
+      },
+      "input": "Tìm hiểu về thuật toán Transformer trong AI",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "wikipedia",
+            "args": {
+              "query": "Transformer"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "wikipedia",
+            "args": {
+              "query": "Transformer algorithm"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "query: expected 'Transformer', got 'Transformer algorithm'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "wikipedia",
+          "args": {
+            "query": "Transformer algorithm"
+          },
+          "result": {
+            "tool": "search_wikipedia",
+            "query": "Transformer algorithm",
+            "items": [
+              {
+                "title": "Transformer (deep learning)",
+                "url": "https://en.wikipedia.org/wiki/Transformer_(deep_learning)",
+                "source": "wikipedia",
+                "summary": "In deep learning, the transformer is a family of artificial neural network architectures based on the multi-head attention mechanism, in which text is"
+              },
+              {
+                "title": "Vision transformer",
+                "url": "https://en.wikipedia.org/wiki/Vision_transformer",
+                "source": "wikipedia",
+                "summary": "A vision transformer (ViT) is a transformer designed for computer vision. A ViT decomposes an input image into a series of patches (rather than text into"
+              },
+              {
+                "title": "Generative pre-trained transformer",
+                "url": "https://en.wikipedia.org/wiki/Generative_pre-trained_transformer",
+                "source": "wikipedia",
+                "summary": "A generative pre-trained transformer (GPT) is a type of large language model (LLM) that is widely used in generative artificial intelligence chatbots"
+              },
+              {
+                "title": "Algorithm",
+                "url": "https://en.wikipedia.org/wiki/Algorithm",
+                "source": "wikipedia",
+                "summary": "transformer-based AI has inverted this sequence — classical algorithms are now being displaced by heuristics once again.[citation needed] Algorithms have"
+              },
+              {
+                "title": "Mamba (deep learning architecture)",
+                "url": "https://en.wikipedia.org/wiki/Mamba_(deep_learning_architecture)",
+                "source": "wikipedia",
+                "summary": "LG]. Dao, Tri; Gu, Albert (2024-07-08). &quot;Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality&quot;. Proceedings"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_define_word",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_define",
+        "difficulty": "easy",
+        "what_it_tests": "Hỏi definition của một từ → define tool, không phải wikipedia hay lookup."
+      },
+      "input": "\"Serendipity\" nghĩa là gì?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "define",
+            "args": {
+              "word": "serendipity"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "define",
+            "args": {
+              "word": "serendipity"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "define",
+          "args": {
+            "word": "serendipity"
+          },
+          "result": {
+            "tool": "define_word",
+            "word": "serendipity",
+            "items": [
+              {
+                "word": "serendipity",
+                "part_of_speech": "noun",
+                "definition": "A combination of events which have come together by chance to make a surprisingly good or wonderful outcome.",
+                "example": "",
+                "source": "dictionaryapi.dev"
+              },
+              {
+                "word": "serendipity",
+                "part_of_speech": "noun",
+                "definition": "An unsought, unintended, and/or unexpected, but fortunate, discovery and/or learning experience that happens by accident.",
+                "example": "",
+                "source": "dictionaryapi.dev"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_weather_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_weather",
+        "difficulty": "medium",
+        "what_it_tests": "Hỏi thời tiết → weather tool với tọa độ Hanoi (21.0, 105.8)."
+      },
+      "input": "Thời tiết ở Hà Nội hôm nay thế nào?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "weather",
+            "args": {
+              "latitude": 21.0,
+              "longitude": 105.8
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "country_info",
+            "args": {
+              "country": "Vietnam"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "missing_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "missing tool call weather",
+          "extra tool call country_info"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "country_info",
+          "args": {
+            "country": "Vietnam"
+          },
+          "result": {
+            "tool": "country_info",
+            "country": "Vietnam",
+            "items": [
+              {
+                "name": "Vietnam",
+                "official_name": "Socialist Republic of Vietnam",
+                "capital": "Hanoi",
+                "region": "Asia",
+                "population": 101343800,
+                "area_km2": 331212.0,
+                "languages": "Vietnamese",
+                "currency": "VND (Vietnamese đồng)",
+                "flag": "🇻🇳",
+                "source": "restcountries.com"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_math_calculation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_math_calc",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu tính toán → math_calc tool, không cần web hay lookup."
+      },
+      "input": "Tính giúp mình 2 mũ 10 bằng bao nhiêu?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "math_calc",
+            "args": {
+              "expression": "2^10"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "math_calc",
+            "args": {
+              "expression": "2**10"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "expression: expected '2^10', got '2**10'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "math_calc",
+          "args": {
+            "expression": "2**10"
+          },
+          "result": {
+            "tool": "calculate",
+            "expression": "2**10",
+            "items": [
+              {
+                "expression": "2**10",
+                "result": "1024.00000000000",
+                "simplified": "1024"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_exchange_rate",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "routing_exchange_rate",
+        "difficulty": "medium",
+        "what_it_tests": "Hỏi tỷ giá ngoại tệ → exchange_rate tool, không lookup."
+      },
+      "input": "100 USD đổi ra Euro được bao nhiêu?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "exchange_rate",
+            "args": {
+              "base": "USD",
+              "target": "EUR",
+              "amount": 100
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "exchange_rate",
+            "args": {
+              "amount": 100,
+              "base": "USD",
+              "target": "EUR"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "exchange_rate",
+          "args": {
+            "amount": 100,
+            "base": "USD",
+            "target": "EUR"
+          },
+          "result": {
+            "tool": "exchange_rate",
+            "base": "USD",
+            "target": "EUR",
+            "items": [
+              {
+                "base": "USD",
+                "target": "EUR",
+                "rate": 0.85866,
+                "amount": 100,
+                "converted": 85.866,
+                "date": "2026-06-01",
+                "source": "frankfurter.app (ECB)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multi_wikipedia_followup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_wikipedia",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: xử lý correction, chỉ lấy deep learning, không lấy RL."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm hiểu về Deep Learning"
+        },
+        {
+          "role": "user",
+          "content": "Cả Reinforcement Learning nữa"
+        },
+        {
+          "role": "user",
+          "content": "Tóm lại chỉ tìm hiểu Deep Learning thôi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "wikipedia",
+            "args": {
+              "query": "Deep Learning",
+              "max_results": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "wikipedia",
+            "args": {
+              "max_results": 5,
+              "query": "Deep Learning"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "wikipedia",
+          "args": {
+            "max_results": 5,
+            "query": "Deep Learning"
+          },
+          "result": {
+            "tool": "search_wikipedia",
+            "query": "Deep Learning",
+            "items": [
+              {
+                "title": "Deep learning",
+                "url": "https://en.wikipedia.org/wiki/Deep_learning",
+                "source": "wikipedia",
+                "summary": "In machine learning, deep learning (DL) focuses on utilizing multilayered neural networks to perform tasks such as classification, regression, and representation"
+              },
+              {
+                "title": "Transformer (deep learning)",
+                "url": "https://en.wikipedia.org/wiki/Transformer_(deep_learning)",
+                "source": "wikipedia",
+                "summary": "In deep learning, the transformer is a family of artificial neural network architectures based on the multi-head attention mechanism, in which text is"
+              },
+              {
+                "title": "Deep reinforcement learning",
+                "url": "https://en.wikipedia.org/wiki/Deep_reinforcement_learning",
+                "source": "wikipedia",
+                "summary": "Deep reinforcement learning (deep RL) is a subfield of machine learning that combines reinforcement learning (RL) and deep learning. RL considers the"
+              },
+              {
+                "title": "Machine learning",
+                "url": "https://en.wikipedia.org/wiki/Machine_learning",
+                "source": "wikipedia",
+                "summary": "in the field of deep learning have allowed neural networks, a class of statistical algorithms, to surpass many previous machine learning approaches in performance"
+              },
+              {
+                "title": "Neural network (machine learning)",
+                "url": "https://en.wikipedia.org/wiki/Neural_network_(machine_learning)",
+                "source": "wikipedia",
+                "summary": "network is typically called a deep neural network if it has at least two hidden layers. Deep neural networks are capable of learning sophisticated hierarchical"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multi_hn_followup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_hn_limit",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: carry max_results=3 từ lượt 2."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Bài viết hot trên Hacker News hôm nay?"
+        },
+        {
+          "role": "user",
+          "content": "Cho mình 3 bài thôi nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hackernews",
+            "args": {
+              "max_results": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hackernews",
+            "args": {
+              "max_results": 3
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hackernews",
+          "args": {
+            "max_results": 3
+          },
+          "result": {
+            "tool": "top_hn_stories",
+            "items": [
+              {
+                "title": "The newest Instagram “exploit” is the goofiest I've seen",
+                "url": "https://www.0xsid.com/blog/meta-account-takeover-fiasco",
+                "source": "hackernews",
+                "points": 1669,
+                "author": "ssiddharth",
+                "comments": 377
+              },
+              {
+                "title": "macOS needs its grid back",
+                "url": "https://blog.hopefullyuseful.com/blog/macos-needs-its-grid-back/",
+                "source": "hackernews",
+                "points": 203,
+                "author": "ranebo",
+                "comments": 112
+              },
+              {
+                "title": "Can the stockmarket swallow Anthropic, SpaceX and OpenAI?",
+                "url": "https://www.economist.com/finance-and-economics/2026/06/01/can-the-stockmarket-swallow-anthropic-spacex-and-openai",
+                "source": "hackernews",
+                "points": 287,
+                "author": "1vuio0pswjnm7",
+                "comments": 510
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multi_exchange_correction",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_exchange_correction",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: sửa base USD→EUR, thêm amount=500, target VND."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tỷ giá USD sang VND hôm nay?"
+        },
+        {
+          "role": "user",
+          "content": "À mà đổi từ EUR sang VND mới đúng"
+        },
+        {
+          "role": "user",
+          "content": "Đổi 500 EUR nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "exchange_rate",
+            "args": {
+              "base": "EUR",
+              "target": "VND",
+              "amount": 500
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "exchange_rate",
+            "args": {
+              "amount": 500,
+              "base": "EUR",
+              "target": "VND"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "exchange_rate",
+          "args": {
+            "amount": 500,
+            "base": "EUR",
+            "target": "VND"
+          },
+          "result": {
+            "tool": "exchange_rate",
+            "base": "EUR",
+            "target": "VND",
+            "items": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multi_crypto_followup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_crypto_followup",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: carry context crypto, chuyển từ bitcoin→ethereum."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Giá Bitcoin hôm nay?"
+        },
+        {
+          "role": "user",
+          "content": "Xem luôn Ethereum nữa"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "crypto_price",
+            "args": {
+              "coin": "ethereum",
+              "vs_currency": "usd"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": false,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "crypto_price",
+            "args": {
+              "coin": "bitcoin",
+              "vs_currency": "usd"
+            }
+          },
+          {
+            "name": "crypto_price",
+            "args": {
+              "coin": "ethereum",
+              "vs_currency": "usd"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "extra_tool_call",
+        "failure_type": "wrong_tool",
+        "failures": [
+          "extra tool call crypto_price"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "crypto_price",
+          "args": {
+            "coin": "bitcoin",
+            "vs_currency": "usd"
+          },
+          "result": {
+            "tool": "crypto_price",
+            "coin": "bitcoin",
+            "items": [
+              {
+                "coin": "bitcoin",
+                "price": 69991,
+                "currency": "USD",
+                "market_cap": 1402460664987.9768,
+                "change_24h": -3.8666365407070415,
+                "source": "coingecko.com"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "crypto_price",
+          "args": {
+            "coin": "ethereum",
+            "vs_currency": "usd"
+          },
+          "result": {
+            "tool": "crypto_price",
+            "coin": "ethereum",
+            "items": [
+              {
+                "coin": "ethereum",
+                "price": 1981.7,
+                "currency": "USD",
+                "market_cap": 239131210569.5801,
+                "change_24h": 0.1247219365133799,
+                "source": "coingecko.com"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multi_ip_lookup",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_ip_correction",
+        "difficulty": "medium",
+        "what_it_tests": "2 turns: correction từ IP 1.1.1.1 sang 8.8.8.8."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "IP 1.1.1.1 ở đâu?"
+        },
+        {
+          "role": "user",
+          "content": "Thôi tra IP 8.8.8.8 đi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "ip_info",
+            "args": {
+              "ip": "8.8.8.8"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "ip_info",
+            "args": {
+              "ip": "8.8.8.8"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "ip_info",
+          "args": {
+            "ip": "8.8.8.8"
+          },
+          "result": {
+            "tool": "ip_lookup",
+            "ip": "8.8.8.8",
+            "items": [
+              {
+                "ip": "8.8.8.8",
+                "country": "United States",
+                "region": "Virginia",
+                "city": "Ashburn",
+                "zip": "20149",
+                "lat": 39.03,
+                "lon": -77.5,
+                "isp": "Google LLC",
+                "org": "Google Public DNS",
+                "source": "ip-api.com"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

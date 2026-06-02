@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from tools._shared import domain, err, request_with_retry
+import requests
+
+from tools._shared import TIMEOUT, domain, err
 
 
 def read_url(url: str = "") -> dict[str, Any]:
@@ -11,8 +13,7 @@ def read_url(url: str = "") -> dict[str, Any]:
         key = os.getenv("FIRECRAWL_API_KEY")
         if not key:
             raise RuntimeError("Missing FIRECRAWL_API_KEY env var")
-        response = request_with_retry(
-            "POST",
+        response = requests.post(
             "https://api.firecrawl.dev/v1/scrape",
             json={"url": url, "formats": ["markdown"]},
             headers={"Authorization": f"Bearer {key}"},

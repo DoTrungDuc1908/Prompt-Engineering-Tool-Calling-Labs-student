@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from tools._shared import TIMEOUT, domain, err, request_with_retry
+import requests
+
+from tools._shared import TIMEOUT, domain, err
 
 
 def web_search(query: str = "", topic: str = "general", timeframe: str | None = "week", max_results: int = 5) -> dict[str, Any]:
@@ -14,8 +16,7 @@ def web_search(query: str = "", topic: str = "general", timeframe: str | None = 
         body: dict[str, Any] = {"query": query, "topic": topic, "max_results": int(max_results or 5), "search_depth": "basic"}
         if timeframe:
             body["time_range"] = timeframe
-        response = request_with_retry(
-            "POST",
+        response = requests.post(
             "https://api.tavily.com/search",
             json=body,
             headers={"Authorization": f"Bearer {key}"},

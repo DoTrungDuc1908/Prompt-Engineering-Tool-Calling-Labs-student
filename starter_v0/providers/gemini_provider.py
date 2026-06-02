@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 import os
+import time
 from typing import Any
 
-from providers.base import ModelResponse, ToolCall, normalize_tool_calls
+from providers.base import ModelResponse, ToolCall
 
 
 def _to_gemini_declarations(tools: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
@@ -73,9 +75,13 @@ class GeminiProvider:
         *,
         api_key_env: str = "GEMINI_API_KEY",
         default_model: str = "gemini-3.5-flash",
+        max_retries: int = 3,
+        retry_delay: float = 2.0,
     ) -> None:
         self.api_key_env = api_key_env
-        self.default_model = default_model
+        self.default_model = os.getenv("MODEL_NAME") or default_model
+        self.max_retries = max_retries
+        self.retry_delay = retry_delay
 
     def complete(
         self,
@@ -105,11 +111,21 @@ class GeminiProvider:
             config_kwargs["tools"] = [types.Tool(function_declarations=declarations)]
 
         client = genai.Client(api_key=api_key)
-        resp = client.models.generate_content(
-            model=model or self.default_model,
-            contents=contents,
-            config=types.GenerateContentConfig(**config_kwargs),
-        )
+        last_exc: Exception | None = None
+        for attempt in range(self.max_retries):
+            try:
+                resp = client.models.generate_content(
+                    model=model or self.default_model,
+                    contents=contents,
+                    config=types.GenerateContentConfig(**config_kwargs),
+                )
+                break
+            except Exception as exc:
+                last_exc = exc
+                if attempt < self.max_retries - 1:
+                    time.sleep(self.retry_delay * (2 ** attempt))
+        else:
+            raise last_exc  # type: ignore[misc]
 
         text_parts: list[str] = []
         calls: list[ToolCall] = []
@@ -133,8 +149,12 @@ class GeminiProvider:
         for function_call in getattr(resp, "function_calls", []) or []:
             append_call(function_call)
 
-        return ModelResponse(
-            text="\n".join(part for part in text_parts if part) or None,
-            tool_calls=normalize_tool_calls(calls),
-            raw=resp,
-        )
+        deduped_calls: list[ToolCall] = []
+        seen: set[tuple[str, str]] = set()
+        for call in calls:
+            key = (call.name, json.dumps(call.args, ensure_ascii=False, sort_keys=True))
+            if key not in seen:
+                seen.add(key)
+                deduped_calls.append(call)
+
+        return ModelResponse(text="\n".join(part for part in text_parts if part) or None, tool_calls=deduped_calls, raw=resp)

@@ -1,108 +1,105 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Team-authored regression cases: exactly 5 single-turn and 5 multi-turn cases covering routing, arguments, clarification, confirmation boundaries, and the local source-audit tool.",
+  "description": "Case do NHÓM tự viết thêm để cover các tool mới (wikipedia, define, hn_search, weather, math_calc, ip_info, exchange_rate, crypto_price, hackernews, country_info). 5 single turn + 5 multi turn = 10 cases.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
   "cases": [
     {
-      "id": "G01_timeline_handle_limit",
-      "phase": "B",
-      "query": "Lấy 7 tweet mới nhất của @karpathy.",
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 7}}]},
-      "metadata": {"what_it_tests": "Explicit handle must lose @ and preserve limit=7."}
-    },
-    {
-      "id": "G02_social_latest",
-      "phase": "B",
-      "query": "Tìm các tweet mới nhất về AI agents trên Twitter.",
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "social_search", "args": {"search_type": "Latest"}}]},
-      "metadata": {"what_it_tests": "Topic-based Twitter request routes to social_search with Latest."}
-    },
-    {
-      "id": "G03_lookup_month",
-      "phase": "B",
-      "query": "Tìm tin tức bảo mật AI nổi bật trong tháng này.",
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "lookup", "args": {"topic": "news", "timeframe": "month"}}]},
-      "metadata": {"what_it_tests": "Current web news for this month maps to topic=news and timeframe=month."}
-    },
-    {
-      "id": "G04_explicit_source_audit",
-      "phase": "B",
-      "query": "Audit các nguồn citation này giúp mình: https://x.com/sama/status/1 và https://arxiv.org/abs/1706.03762",
+      "id": "G01_wikipedia_search",
+      "phase": "B", "suite": "group",
+      "query": "Tìm hiểu về thuật toán Transformer trong AI",
       "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "source_audit", "args": {"sources": ["https://x.com/sama/status/1", "https://arxiv.org/abs/1706.03762"]}}]},
-      "metadata": {"what_it_tests": "Explicit citation audit uses the local source_audit tool with all supplied URLs."}
+      "expect": {"tool_calls": [{"name": "wikipedia", "args": {}}]},
+      "metadata": {"skill": "routing_wikipedia", "difficulty": "easy", "what_it_tests": "Yêu cầu tìm hiểu về khái niệm/chủ đề → wikipedia, không phải web_search."}
     },
     {
-      "id": "G05_send_requires_confirmation",
-      "phase": "B",
-      "query": "Đăng bản tin AI sáng nay lên Telegram giúp mình.",
-      "failure_type": "wrong_boundary",
-      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
-      "metadata": {"what_it_tests": "Initial publish request must pause for explicit yes/no confirmation."}
+      "id": "G02_define_word",
+      "phase": "B", "suite": "group",
+      "query": "\"Serendipity\" nghĩa là gì?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "define", "args": {"word": "serendipity"}}]},
+      "metadata": {"skill": "routing_define", "difficulty": "easy", "what_it_tests": "Hỏi definition của một từ → define tool, không phải wikipedia hay lookup."}
     },
     {
-      "id": "G06_multiturn_account_and_limit_override",
-      "phase": "B",
+      "id": "G03_weather_routing",
+      "phase": "B", "suite": "group",
+      "query": "Nhiệt độ hôm nay ở Hà Nội là bao nhiêu?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "weather", "args": {}}]},
+      "metadata": {"skill": "routing_weather", "difficulty": "medium", "what_it_tests": "Hỏi thời tiết → weather tool."}
+    },
+    {
+      "id": "G04_math_calculation",
+      "phase": "B", "suite": "group",
+      "query": "Tính giúp mình 2 mũ 10 bằng bao nhiêu?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "math_calc", "args": {"expression": "2**10"}}]},
+      "metadata": {"skill": "routing_math_calc", "difficulty": "easy", "what_it_tests": "Yêu cầu tính toán → math_calc tool."}
+    },
+    {
+      "id": "G05_exchange_rate",
+      "phase": "B", "suite": "group",
+      "query": "100 USD đổi ra Euro được bao nhiêu?",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "exchange_rate", "args": {"base": "USD", "target": "EUR", "amount": 100}}]},
+      "metadata": {"skill": "routing_exchange_rate", "difficulty": "medium", "what_it_tests": "Hỏi tỷ giá ngoại tệ → exchange_rate tool, không lookup."}
+    },
+    {
+      "id": "G06_multi_wikipedia_followup",
+      "phase": "B", "suite": "group",
       "turns": [
-        {"role": "user", "content": "Lấy 10 tweet mới nhất của Sam Altman."},
-        {"role": "user", "content": "Đổi sang Andrej Karpathy."},
-        {"role": "user", "content": "Chỉ lấy 2 tweet thôi."}
-      ],
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 2}}]},
-      "metadata": {"what_it_tests": "New account and count override older multi-turn values."}
-    },
-    {
-      "id": "G07_multiturn_news_carryover",
-      "phase": "B",
-      "turns": [
-        {"role": "user", "content": "Tìm tin AI trong tháng này."},
-        {"role": "user", "content": "Chuyển chủ đề sang robotics."},
-        {"role": "user", "content": "Vẫn lấy tin tức trong tháng nhé."}
-      ],
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "robotics", "topic": "news", "timeframe": "month"}}]},
-      "metadata": {"what_it_tests": "Carry news/month context while replacing only the query."}
-    },
-    {
-      "id": "G08_multiturn_fill_url",
-      "phase": "B",
-      "turns": [
-        {"role": "user", "content": "Tóm tắt bài viết này giúp mình."},
-        {"role": "user", "content": "Link đây: https://openai.com/research/"},
-        {"role": "user", "content": "Chỉ đọc đúng URL vừa gửi."}
-      ],
-      "failure_type": "missing_info",
-      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research/"}}]},
-      "metadata": {"what_it_tests": "Use a URL supplied in an earlier turn without inventing or searching."}
-    },
-    {
-      "id": "G09_multiturn_switch_to_social_top",
-      "phase": "B",
-      "turns": [
-        {"role": "user", "content": "Tìm trên web tin về OpenAI."},
-        {"role": "user", "content": "Đổi sang Twitter nhé."},
-        {"role": "user", "content": "Chỉ lấy các tweet top, vẫn về OpenAI."}
+        {"role": "user", "content": "Tìm hiểu về Deep Learning"},
+        {"role": "user", "content": "Cả Reinforcement Learning nữa"},
+        {"role": "user", "content": "Tóm lại chỉ tìm hiểu Deep Learning thôi"}
       ],
       "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "OpenAI", "search_type": "Top"}}]},
-      "metadata": {"what_it_tests": "Latest source switch wins and top maps to search_type=Top."}
+      "expect": {"tool_calls": [{"name": "wikipedia", "args": {"query": "Deep Learning"}}]},
+      "metadata": {"skill": "multiturn_wikipedia", "difficulty": "hard", "what_it_tests": "3 turns: xử lý correction, chỉ lấy deep learning, không lấy RL."}
     },
     {
-      "id": "G10_multiturn_collect_sources_for_audit",
-      "phase": "B",
+      "id": "G07_multi_hn_followup",
+      "phase": "B", "suite": "group",
       "turns": [
-        {"role": "user", "content": "Mình cần audit các nguồn citation."},
-        {"role": "user", "content": "Nguồn đầu: https://example.com/report?utm_source=newsletter"},
-        {"role": "user", "content": "Thêm https://x.com/sama/status/1 rồi kiểm tra cả hai."}
+        {"role": "user", "content": "Bài viết hot trên Hacker News hôm nay?"},
+        {"role": "user", "content": "Cho mình 3 bài thôi nhé"}
       ],
       "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "source_audit", "args": {"sources": ["https://example.com/report?utm_source=newsletter", "https://x.com/sama/status/1"]}}]},
-      "metadata": {"what_it_tests": "Collect audit URLs across turns and pass both source strings."}
+      "expect": {"tool_calls": [{"name": "hackernews", "args": {"max_results": 3}}]},
+      "metadata": {"skill": "multiturn_hn_limit", "difficulty": "medium", "what_it_tests": "2 turns: carry max_results=3 từ lượt 2."}
+    },
+    {
+      "id": "G08_multi_exchange_correction",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tỷ giá USD sang VND hôm nay?"},
+        {"role": "user", "content": "À mà đổi từ EUR sang VND mới đúng"},
+        {"role": "user", "content": "Đổi 500 EUR nhé"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "exchange_rate", "args": {"base": "EUR", "target": "VND", "amount": 500}}]},
+      "metadata": {"skill": "multiturn_exchange_correction", "difficulty": "hard", "what_it_tests": "3 turns: sửa base USD→EUR, thêm amount=500, target VND."}
+    },
+    {
+      "id": "G09_multi_crypto_followup",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Giá Bitcoin hôm nay?"},
+        {"role": "user", "content": "Bỏ Bitcoin đi, cho mình giá Ethereum"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "crypto_price", "args": {"coin": "ethereum", "vs_currency": "usd"}}]},
+      "metadata": {"skill": "multiturn_crypto_followup", "difficulty": "medium", "what_it_tests": "2 turns: chỉ xử lý latest turn (Ethereum), không gọi cho Bitcoin."}
+    },
+    {
+      "id": "G10_multi_ip_lookup",
+      "phase": "B", "suite": "group",
+      "turns": [
+        {"role": "user", "content": "IP 1.1.1.1 ở đâu?"},
+        {"role": "user", "content": "Thôi tra IP 8.8.8.8 đi"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "ip_info", "args": {"ip": "8.8.8.8"}}]},
+      "metadata": {"skill": "multiturn_ip_correction", "difficulty": "medium", "what_it_tests": "2 turns: correction từ IP 1.1.1.1 sang 8.8.8.8."}
     }
   ]
 }

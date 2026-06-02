@@ -99,13 +99,6 @@ python -c "from tools import TOOL_FUNCTIONS as T; print(T['timeline']('sama', li
 python -c "from tools import TOOL_FUNCTIONS as T; print(T['social_search']('OpenAI', limit=1)['items'][0]['title'])"
 ```
 
-If either Twitter tool returns `403 Forbidden`, verify that `RAPIDAPI_KEY` is
-subscribed to Twitter API45 and keep:
-
-```bash
-RAPIDAPI_TWITTER_HOST=twitter-api45.p.rapidapi.com
-```
-
 ## 5. arXiv Bonus — `papers`, `paper_text`
 
 No API key is required. arXiv is rate-limited, so the tools wait between requests and retry lightly on HTTP 429.
@@ -207,33 +200,6 @@ Direct tool test (verifies the bot token/chat only):
 python -c "from tools import TOOL_FUNCTIONS as T; print(T['send']('AI20k test message', confirmed=True))"
 ```
 
-## 7. Local Source Audit — `source_audit`
-
-`source_audit` is a team-authored local tool. It needs no API key and does not
-fetch content or verify claims. It flags invalid URLs, duplicate URLs, social
-signals, and arXiv preprints for manual review.
-
-Quick test:
-
-```bash
-python -c "from tools import TOOL_FUNCTIONS as T; print(T['source_audit'](['https://x.com/sama/status/1', 'https://arxiv.org/abs/1706.03762'])['summary'])"
-python -m unittest discover -s tests -v
-python scripts/validate_static.py
-```
-
-## 8. Local Research Workflow Tools
-
-Five team-authored post-processing tools run locally without API keys:
-
-- `dedupe_sources`: remove duplicate collected results.
-- `rank_sources`: prioritize sources for manual review with transparent heuristics.
-- `extract_citations`: extract URLs and standalone arXiv IDs from text.
-- `claim_matrix`: organize user-supplied claim stances by source.
-- `briefing_outline`: create an evidence-oriented briefing structure.
-
-These tools do not fetch data or verify factual claims. They operate on
-already-collected inputs.
-
 ## Final Checklist
 
 Before class, at least one person per group should have:
@@ -244,8 +210,4 @@ Before class, at least one person per group should have:
 - `RAPIDAPI_KEY`
 - optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - optional `ARXIV_USER_AGENT`
-- `python scripts/validate_static.py` passes
 - `python scripts/preflight_provider.py --provider openrouter` passes
-- `python scripts/preflight_tools.py` passes
-- optional full smoke test: `python scripts/preflight_tools.py --include-arxiv`
-- diagnose non-Twitter tools separately: `python scripts/preflight_tools.py --skip-twitter --include-arxiv`

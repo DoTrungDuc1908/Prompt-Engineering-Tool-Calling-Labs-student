@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from providers.base import ModelResponse, ToolCall
+from providers.base import ModelResponse, ToolCall, normalize_tool_calls
 
 
 def _to_anthropic_tools(tools: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
@@ -85,4 +85,8 @@ class AnthropicProvider:
                 text_parts.append(getattr(block, "text", ""))
             elif block_type == "tool_use":
                 calls.append(ToolCall(name=getattr(block, "name"), args=dict(getattr(block, "input", {}) or {})))
-        return ModelResponse(text="\n".join(part for part in text_parts if part) or None, tool_calls=calls, raw=resp)
+        return ModelResponse(
+            text="\n".join(part for part in text_parts if part) or None,
+            tool_calls=normalize_tool_calls(calls),
+            raw=resp,
+        )

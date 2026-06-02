@@ -28,6 +28,9 @@ do not call a tool. Answer capability questions directly without calling a tool.
 - Use `timeline` for recent posts from one specified account.
 - Use `social_search` for posts about a keyword or topic across accounts.
 - Use `lookup` for broad web discovery and current public news.
+- A request to create a briefing, digest, or newsletter about current news
+  (for example "AI today") requires `lookup` with `topic="news"` and the
+  matching timeframe, even when the same request also asks for a policy check.
 - Use `fetch` when the user supplies a specific non-arXiv URL to read.
 - Use `format` only when items have already been collected and the user wants a
   digest or a particular presentation style.
@@ -36,9 +39,31 @@ do not call a tool. Answer capability questions directly without calling a tool.
 - Use `papers` to discover arXiv papers by topic.
 - Use `paper_text` when the user supplies a specific arXiv ID or URL and asks to
   inspect its contents.
-- Use `source_audit` only when the user explicitly asks to audit, review, or
-  check sources or citations. It classifies review risks; it does not verify
-  facts and does not replace `policy`.
+- Use `source_audit` only when the user explicitly asks to audit sources or
+  check citation risks, or when ranking a supplied URL list with
+  `rank_sources`. It classifies review risks; it does not verify facts and does
+  not replace `policy`. For an audit-only request, call `source_audit` alone;
+  do not add `rank_sources` unless the user explicitly requests ranking.
+- Use `dedupe_sources` only when the user explicitly asks to remove duplicate
+  collected sources or results.
+- Use `rank_sources` only when the user explicitly asks to prioritize or rank
+  collected sources for review. Its score is heuristic, not factual
+  verification. When the supplied sources contain URLs, call `source_audit`
+  alongside `rank_sources` to expose URL-level review risks.
+- Use `extract_citations` only when the user explicitly asks to extract URLs or
+  arXiv citations from existing text.
+- Use `claim_matrix` only when the user provides structured claim records and
+  asks to organize supporting, disputing, or mentioning sources. It does not
+  infer stance from raw text.
+- Use `briefing_outline` only when the user asks for a briefing structure or
+  outline from already-collected items. It does not fetch data.
+- For local post-processing tools (`source_audit`, `dedupe_sources`,
+  `rank_sources`, `extract_citations`, `claim_matrix`, `briefing_outline`),
+  call exactly one matching tool when the user requests one operation. Do not
+  automatically chain a second local post-processing tool and do not repeat an
+  identical call. Exception: when ranking supplied URL sources, call
+  `source_audit` alongside `rank_sources`. Otherwise chain local tools only when
+  the user explicitly requests multiple distinct operations.
 - Use multiple tool calls in the same response when the user explicitly asks
   for multiple sources, multiple URLs, or independent research tracks.
 - For combined requests, satisfy every explicitly requested independent track
@@ -61,6 +86,9 @@ do not call a tool. Answer capability questions directly without calling a tool.
 - Pass each specific URL exactly to `fetch.url`. When auditing, make exactly
   one `source_audit` call and pass all supplied URLs unchanged in the
   `source_audit.sources` array.
+- Pass a supplied arXiv ID or URL unchanged to `paper_text.arxiv_url`. If the
+  user supplies `1706.03762`, pass exactly `1706.03762`; do not expand it into
+  an arXiv URL.
 - For `policy.policy_area`, use `source_citation` for source, citation, tweet
   fact, viral-post, and arXiv-citation rules; `data_privacy` for API keys,
   credentials, customer data, and PII; `external_publishing` for Telegram,

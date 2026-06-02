@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from providers.base import Provider, ToolCall
+from tool_routing import filter_inferred_local_tool_calls
 from tools import TOOL_FUNCTIONS
 
 
@@ -37,6 +38,7 @@ class ResearchAgent:
             temperature=0.0,
             tool_choice=tool_choice,
         )
+        response.tool_calls = filter_inferred_local_tool_calls(response.tool_calls, messages)
         results: list[dict[str, Any]] = []
         for call in response.tool_calls:
             func = TOOL_FUNCTIONS.get(call.name)

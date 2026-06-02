@@ -4,7 +4,7 @@ import json
 import os
 from typing import Any
 
-from providers.base import ModelResponse, ToolCall
+from providers.base import ModelResponse, ToolCall, normalize_tool_calls
 
 
 class OpenAIProvider:
@@ -56,4 +56,4 @@ class OpenAIProvider:
         for call in msg.tool_calls or []:
             args = json.loads(call.function.arguments or "{}")
             calls.append(ToolCall(name=call.function.name, args=args))
-        return ModelResponse(text=msg.content, tool_calls=calls, raw=resp)
+        return ModelResponse(text=msg.content, tool_calls=normalize_tool_calls(calls), raw=resp)

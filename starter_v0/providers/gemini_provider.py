@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import json
 import os
 from typing import Any
 
-from providers.base import ModelResponse, ToolCall
+from providers.base import ModelResponse, ToolCall, normalize_tool_calls
 
 
 def _to_gemini_declarations(tools: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
@@ -134,12 +133,8 @@ class GeminiProvider:
         for function_call in getattr(resp, "function_calls", []) or []:
             append_call(function_call)
 
-        deduped_calls: list[ToolCall] = []
-        seen: set[tuple[str, str]] = set()
-        for call in calls:
-            key = (call.name, json.dumps(call.args, ensure_ascii=False, sort_keys=True))
-            if key not in seen:
-                seen.add(key)
-                deduped_calls.append(call)
-
-        return ModelResponse(text="\n".join(part for part in text_parts if part) or None, tool_calls=deduped_calls, raw=resp)
+        return ModelResponse(
+            text="\n".join(part for part in text_parts if part) or None,
+            tool_calls=normalize_tool_calls(calls),
+            raw=resp,
+        )

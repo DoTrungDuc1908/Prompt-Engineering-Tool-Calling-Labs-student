@@ -1,0 +1,47 @@
+{
+  "dataset_id": "day04_v2_workflow_tools",
+  "dataset_role": "extension",
+  "description": "Routing checks for five team-authored local post-processing tools.",
+  "cases": [
+    {
+      "id": "W01_dedupe_sources",
+      "phase": "B",
+      "query": "Khử trùng lặp các nguồn đã thu thập này giúp mình: https://example.com/report?utm_source=mail và https://example.com/report",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "dedupe_sources", "args": {}}]},
+      "metadata": {"what_it_tests": "Explicit deduplication request routes to dedupe_sources."}
+    },
+    {
+      "id": "W02_rank_sources",
+      "phase": "B",
+      "query": "Xếp hạng ưu tiên các nguồn đã thu thập này: https://example.com/report và https://openai.com/research/",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "rank_sources", "args": {}}, {"name": "source_audit", "args": {}}]},
+      "metadata": {"what_it_tests": "Explicit URL-source prioritization routes to rank_sources plus URL-risk audit."}
+    },
+    {
+      "id": "W03_extract_citations",
+      "phase": "B",
+      "query": "Trích xuất citation và URL từ đoạn text hiện có này: Xem https://openai.com/research/ và paper arXiv 1706.03762.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "extract_citations", "args": {}}]},
+      "metadata": {"what_it_tests": "Explicit citation extraction request routes to extract_citations."}
+    },
+    {
+      "id": "W04_claim_matrix",
+      "phase": "B",
+      "query": "Lập claim matrix từ records có cấu trúc này: [{\"claim\":\"Model đạt 90%\",\"source\":\"source-a\",\"stance\":\"supports\"},{\"claim\":\"Model đạt 90%\",\"source\":\"source-b\",\"stance\":\"disputes\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "claim_matrix", "args": {}}]},
+      "metadata": {"what_it_tests": "Explicit structured claim organization request routes to claim_matrix."}
+    },
+    {
+      "id": "W05_briefing_outline",
+      "phase": "B",
+      "query": "Tạo outline briefing executive từ các item đã thu thập: [{\"title\":\"AI update\",\"url\":\"https://example.com/ai\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "briefing_outline", "args": {"audience": "executive"}}]},
+      "metadata": {"what_it_tests": "Explicit briefing-outline request routes to briefing_outline."}
+    }
+  ]
+}

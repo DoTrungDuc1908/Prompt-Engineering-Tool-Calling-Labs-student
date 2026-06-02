@@ -11,6 +11,7 @@ from typing import Any
 from env_loader import load_lab_env
 from providers import make_provider
 from providers.base import ToolCall
+from tool_routing import filter_inferred_local_tool_calls
 from tools import TOOL_FUNCTIONS, load_tool_declarations, to_openai_tools
 from versioning import artifact_version_dict, build_artifact_version
 
@@ -98,7 +99,7 @@ def run_model_tool_loop(
 
     for round_index in range(1, max_tool_rounds + 1):
         response = provider.complete(working_messages, tools, model=model, temperature=0.0)
-        calls = response.tool_calls
+        calls = filter_inferred_local_tool_calls(response.tool_calls, working_messages)
         round_record: dict[str, Any] = {
             "round": round_index,
             "assistant_text": response.text,

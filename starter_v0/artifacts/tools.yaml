@@ -34,7 +34,7 @@ tools:
       required: [query]
 
   - name: lookup
-    description: "Search the public web. Use topic=news for current news. Map today to day, this week to week, this month to month, and this year to year."
+    description: "Search the public web. Always call lookup for a briefing, digest, or newsletter about current news such as 'AI today', including when the request also asks for a policy check. Use topic=news for current news. Map today to day, this week to week, this month to month, and this year to year."
     parameters:
       type: object
       properties:
@@ -104,17 +104,17 @@ tools:
       required: [query]
 
   - name: paper_text
-    description: "Download an arXiv PDF and extract local text when the user provides a specific arXiv ID or URL and asks to inspect its contents."
+    description: "Download an arXiv PDF and extract local text when the user provides a specific arXiv ID or URL and asks to inspect its contents. Pass the user-supplied arXiv ID or URL unchanged: keep a bare ID such as 1706.03762 as exactly 1706.03762 instead of expanding it into a URL."
     parameters:
       type: object
       properties:
-        arxiv_url: {type: string, default: "", description: "ID hoặc địa chỉ"}
+        arxiv_url: {type: string, default: "", description: "Exact user-supplied arXiv ID or URL; preserve its original form"}
         max_pages: {type: integer, default: 5, description: "Số trang"}
         max_chars: {type: integer, default: 8000, description: "Số ký tự"}
       required: [arxiv_url]
 
   - name: source_audit
-    description: "Heuristically review user-supplied source or citation URLs. Use only when the user explicitly asks to audit, review, or check sources/citations. Make exactly one source_audit call per request and pass every supplied URL unchanged in one sources array, even when multiple URLs are provided. It flags invalid URLs, duplicates, social signals, and arXiv preprints; it does not verify claims or replace company-policy search."
+    description: "Heuristically audit user-supplied source or citation URLs. Use when the user explicitly asks to audit sources or check citation risks, and alongside rank_sources when ranking supplied URL sources. For an audit-only request, call source_audit alone: never add rank_sources unless the user explicitly asks to rank or prioritize sources. Make exactly one source_audit call per request and pass every supplied URL unchanged in one sources array, even when multiple URLs are provided. It flags invalid URLs, duplicates, social signals, and arXiv preprints; it does not verify claims or replace company-policy search."
     parameters:
       type: object
       properties:
@@ -124,3 +124,87 @@ tools:
           description: "One array containing every user-supplied source or citation URL unchanged"
           items: {type: string}
       required: [sources]
+
+  - name: dedupe_sources
+    description: "Remove duplicate already-collected research items. Use only when the user explicitly asks to deduplicate sources or results. Prefer normalized URL, then normalized title. This tool does not fetch content."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Already-collected research items"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              summary: {type: string}
+        strategy: {type: string, enum: [url_then_title, url_only, title_only], default: "url_then_title", description: "Duplicate matching strategy"}
+      required: [items]
+
+  - name: rank_sources
+    description: "Rank already-collected sources using transparent heuristics. Use only when the user explicitly asks to prioritize or rank sources. Make exactly one rank_sources call. When supplied sources contain URLs, also call source_audit once with all URLs so URL-level review risks are visible. Scores do not verify claims or establish credibility."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Already-collected source items"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              source_type: {type: string}
+              summary: {type: string}
+      required: [items]
+
+  - name: extract_citations
+    description: "Extract HTTP URLs and arXiv identifiers from existing text. Use only when the user explicitly asks to extract citations or links. Make exactly one extract_citations call with the complete supplied text; never repeat an identical call. This tool does not fetch or validate source content."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Existing text that may contain URLs or arXiv IDs"}
+      required: [text]
+
+  - name: claim_matrix
+    description: "Group user-supplied structured claim records into a source matrix. Each record must already include claim text, source, and optional stance supports/disputes/mentions. Use only when explicitly asked to organize claims. This tool does not infer stance or verify facts."
+    parameters:
+      type: object
+      properties:
+        records:
+          type: array
+          default: []
+          description: "Structured claim records with claim, source, and optional stance"
+          items:
+            type: object
+            properties:
+              claim: {type: string}
+              source: {type: string}
+              stance: {type: string, enum: [supports, disputes, mentions]}
+            required: [claim, source]
+      required: [records]
+
+  - name: briefing_outline
+    description: "Build a briefing outline from already-collected items. Use only when the user explicitly asks for a briefing structure or outline. It organizes evidence placeholders and missing-source warnings; it does not fetch or verify claims."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Already-collected research items"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              summary: {type: string}
+        audience: {type: string, enum: [executive, technical, general], default: "executive", description: "Target briefing audience"}
+        title: {type: string, default: "Research briefing", description: "Briefing title"}
+      required: [items]

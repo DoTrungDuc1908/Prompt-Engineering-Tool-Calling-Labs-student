@@ -856,12 +856,174 @@ body::before {
   #welcome h1 { font-size: 22px; }
   .quick-actions { margin-top: 20px; }
 }
+
+/* Right Sidebar Styles */
+#right-sidebar {
+  width: 320px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+  transition: transform var(--transition-base), opacity var(--transition-base), width var(--transition-base);
+}
+
+#right-sidebar.collapsed {
+  transform: translateX(100%);
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  border: none;
+}
+
+#right-sidebar-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#right-sidebar-header .title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#right-sidebar-header .title svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-3);
+}
+
+/* Tool list search container */
+.search-container {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.search-container input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.search-container input:focus {
+  border-color: var(--border-accent);
+}
+
+/* Scrollable Tool list */
+#tools-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tool-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  transition: all var(--transition-fast);
+}
+
+.tool-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-medium);
+  transform: translateY(-1px);
+}
+
+.tool-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tool-item-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-accent);
+}
+
+.tool-item-badge {
+  font-size: 10px;
+  background: var(--tool-bg);
+  border: 1px solid var(--tool-border);
+  color: var(--tool-icon);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.tool-item-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.tool-item-params-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.tool-item-params {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tool-param {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.tool-param.required {
+  color: var(--warning);
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+@media (max-width: 1024px) {
+  #right-sidebar {
+    position: fixed; top: 0; right: 0; height: 100%; z-index: 50;
+    transform: translateX(100%); opacity: 0;
+  }
+  #right-sidebar.show { transform: translateX(0); opacity: 1; }
+}
 </style>
 </head>
 <body>
 
 <!-- Sidebar Overlay for mobile -->
-<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar-overlay" onclick="closeAllSidebars()"></div>
 
 <aside id="sidebar">
   <div id="sidebar-header">
@@ -902,6 +1064,11 @@ body::before {
     <button class="header-btn" onclick="newChat()" title="New chat" aria-label="New chat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 5v14m-7-7h14"/>
+      </svg>
+    </button>
+    <button class="header-btn" onclick="toggleRightSidebar()" title="Toggle tools" aria-label="Toggle tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
       </svg>
     </button>
   </div>
@@ -964,6 +1131,28 @@ body::before {
   </div>
 </div>
 
+<!-- Right sidebar -->
+<aside id="right-sidebar">
+  <div id="right-sidebar-header">
+    <div class="title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+      Danh sách Tools
+    </div>
+    <button class="header-btn" onclick="toggleRightSidebar()" title="Collapse tools" aria-label="Collapse tools">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="search-container">
+    <input type="text" id="tools-search" placeholder="Tìm kiếm tool..." oninput="onSearchTools()">
+  </div>
+  <div id="tools-list">
+    <div class="empty">Loading tools...</div>
+  </div>
+</aside>
+
 <!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -1016,10 +1205,37 @@ function toggleSidebar() {
   const o = $('sidebar-overlay');
   if (window.innerWidth <= 768) {
     s.classList.toggle('show');
-    o.classList.toggle('show');
+    if (s.classList.contains('show')) {
+      o.classList.add('show');
+      $('right-sidebar').classList.remove('show');
+    } else {
+      o.classList.remove('show');
+    }
   } else {
     s.classList.toggle('collapsed');
   }
+}
+
+function toggleRightSidebar() {
+  const rs = $('right-sidebar');
+  const o = $('sidebar-overlay');
+  if (window.innerWidth <= 1024) {
+    rs.classList.toggle('show');
+    if (rs.classList.contains('show')) {
+      o.classList.add('show');
+      $('sidebar').classList.remove('show');
+    } else {
+      o.classList.remove('show');
+    }
+  } else {
+    rs.classList.toggle('collapsed');
+  }
+}
+
+function closeAllSidebars() {
+  $('sidebar').classList.remove('show');
+  $('right-sidebar').classList.remove('show');
+  $('sidebar-overlay').classList.remove('show');
 }
 
 function getChat() {
@@ -1034,10 +1250,9 @@ function newChat() {
   renderSidebar();
   renderMsgs();
   $('chat-input').focus();
-  // Close mobile sidebar
-  if (window.innerWidth <= 768) {
-    $('sidebar').classList.remove('show');
-    $('sidebar-overlay').classList.remove('show');
+  // Close mobile sidebars
+  if (window.innerWidth <= 1024) {
+    closeAllSidebars();
   }
 }
 
@@ -1083,9 +1298,8 @@ function switchChat(id) {
   curId = id;
   renderSidebar();
   renderMsgs();
-  if (window.innerWidth <= 768) {
-    $('sidebar').classList.remove('show');
-    $('sidebar-overlay').classList.remove('show');
+  if (window.innerWidth <= 1024) {
+    closeAllSidebars();
   }
 }
 
@@ -1390,6 +1604,74 @@ function highlightAllCode() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   TOOLS LIST SIDEBAR
+   ═══════════════════════════════════════════════════════════════════ */
+let allTools = [];
+
+function loadTools() {
+  fetch(API + '/api/tools')
+    .then(r => r.json())
+    .then(tools => {
+      allTools = tools;
+      renderTools();
+    })
+    .catch(err => {
+      console.error('Failed to load tools:', err);
+      $('tools-list').innerHTML = '<div class="empty">Không thể tải danh sách tools</div>';
+    });
+}
+
+function renderTools(filterText = '') {
+  const container = $('tools-list');
+  const query = filterText.toLowerCase().trim();
+  
+  const filtered = allTools.filter(t => {
+    return t.name.toLowerCase().includes(query) || 
+           (t.description && t.description.toLowerCase().includes(query));
+  });
+  
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty">Không tìm thấy tool nào</div>';
+    return;
+  }
+  
+  container.innerHTML = filtered.map(t => {
+    const params = t.parameters && t.parameters.properties ? t.parameters.properties : {};
+    const required = t.parameters && t.parameters.required ? t.parameters.required : [];
+    
+    let paramsHtml = '';
+    const paramNames = Object.keys(params);
+    if (paramNames.length > 0) {
+      paramsHtml += `<div class="tool-item-params-title">Tham số</div>`;
+      paramsHtml += `<div class="tool-item-params">`;
+      paramNames.forEach(p => {
+        const isReq = required.includes(p);
+        const reqClass = isReq ? ' required' : '';
+        const reqStar = isReq ? '*' : '';
+        const pInfo = params[p];
+        const pType = pInfo.type || 'string';
+        paramsHtml += `<span class="tool-param${reqClass}" title="${escapeHtml(pInfo.description || '')} (${pType})">${escapeHtml(p)}${reqStar}</span>`;
+      });
+      paramsHtml += `</div>`;
+    }
+    
+    return `<div class="tool-item">
+      <div class="tool-item-header">
+        <span class="tool-item-name">${escapeHtml(t.name)}</span>
+        <span class="tool-item-badge">tool</span>
+      </div>
+      <div class="tool-item-desc">${escapeHtml(t.description || 'Không có mô tả')}</div>
+      ${paramsHtml}
+    </div>`;
+  }).join('');
+}
+
+function onSearchTools() {
+  const val = $('tools-search').value;
+  renderTools(val);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════════════════════════ */
 $('chat-input').focus();
@@ -1405,6 +1687,7 @@ fetch(API + '/api/config')
     $('tools-label').textContent = 'Disconnected';
   });
 
+loadTools();
 newChat();
 </script>
 </body>

@@ -31,7 +31,33 @@ system_prompt = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 tool_declarations = load_tool_declarations(TOOLS_PATH)
 openai_tools = to_openai_tools(tool_declarations)
 
-provider = make_provider("openai")
+# Detect active provider based on uncommented API keys in the environment
+provider_name = os.getenv("PROVIDER")
+if not provider_name:
+    if os.getenv("OPENROUTER_API_KEY"):
+        provider_name = "openrouter"
+    elif os.getenv("OPENAI_API_KEY"):
+        provider_name = "openai"
+    elif os.getenv("GEMINI_API_KEY"):
+        provider_name = "gemini"
+    elif os.getenv("ANTHROPIC_API_KEY"):
+        provider_name = "anthropic"
+    elif os.getenv("GROQ_API_KEY"):
+        provider_name = "groq"
+    elif os.getenv("OLLAMA_API_KEY") and os.getenv("OLLAMA_API_KEY") != "ollama":
+        provider_name = "ollama"
+    elif os.getenv("DEEPSEEK_API_KEY"):
+        provider_name = "deepseek"
+    elif os.getenv("TOGETHER_API_KEY"):
+        provider_name = "together"
+    elif os.getenv("NVIDIA_API_KEY"):
+        provider_name = "nvidia"
+    elif os.getenv("OLLAMA_API_KEY"):
+        provider_name = "ollama"
+    else:
+        provider_name = "openai"
+
+provider = make_provider(provider_name)
 
 app = FastAPI(title="Research Agent Chat")
 
